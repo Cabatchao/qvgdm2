@@ -1,11 +1,17 @@
-<div align="center">
+# Qui Veut Gagner des Millions (version points)
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+Ce dépôt contient l'implémentation du jeu inspiré de **"Qui veut gagner des millions"**, avec un système de points, une boutique de récompenses et une disponibilité **Web + iOS + Android**.
 
-  <h1>Built with AI Studio</h2>
+## État actuel
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+Le cadrage initial est validé :
+- exigences fonctionnelles consolidées : `docs/requirements.md`
+- réponses métier validées : `docs/questions-client.md`
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## Prochaines étapes de développement
 
-</div>
+1. Initialiser l'architecture technique (backend + front web + mobile).
+2. Implémenter le moteur de jeu (questions, timer serveur 10s, élimination).
+3. Implémenter comptes, sécurité (2FA), et anti-triche.
+4. Implémenter boutique, paiements (Apple/Google/SMS) et gestion des points.
+5. Livrer un MVP avec back-office administrateur.
