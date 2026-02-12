@@ -22,7 +22,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ type, lang, userPoin
     payPoints: lang === 'fr' ? 'Payer avec mes Points' : 'Pay with my Points',
     insufficient: lang === 'fr' ? 'Points insuffisants' : 'Insufficient points',
     sms: lang === 'fr' ? 'SMS Surtaxé' : 'Premium SMS',
-    card: lang === 'fr' ? 'Carte Bancaire / In-App' : 'Credit Card / In-App',
+    card: lang === 'fr' ? 'Carte Bancaire / Stripe' : 'Credit Card / Online Payment',
     cancel: lang === 'fr' ? 'Annuler' : 'Cancel',
   };
 
@@ -31,7 +31,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ type, lang, userPoin
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md">
       <div className="bg-[#0f172a] border-2 border-blue-500/30 rounded-[32px] w-full max-w-md p-8 shadow-3xl animate-in zoom-in duration-300">
-        <h2 className="text-3xl font-black text-center mb-2 text-yellow-500 italic uppercase italic">
+        <h2 className="text-3xl font-black text-center mb-2 text-yellow-500 italic uppercase">
           {t.title}
         </h2>
         <p className="text-center text-white/60 text-sm uppercase tracking-widest mb-8">
@@ -39,7 +39,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ type, lang, userPoin
         </p>
 
         <div className="space-y-4">
-          {/* Points Payment */}
           <button 
             disabled={userPoints < price.points}
             onClick={() => onPaid('points')}
@@ -56,11 +55,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ type, lang, userPoin
 
           <div className="flex items-center gap-4 py-2">
             <div className="h-px bg-white/10 flex-1"></div>
-            <span className="text-[10px] text-white/30 font-black uppercase tracking-widest">OR</span>
+            <span className="text-[10px] text-white/30 font-black uppercase tracking-widest">OU</span>
             <div className="h-px bg-white/10 flex-1"></div>
           </div>
 
-          {/* Real Money Simulation */}
           <button 
             onClick={() => onPaid('money')}
             className="w-full p-5 rounded-2xl bg-blue-600 hover:bg-blue-500 border-2 border-blue-400/30 text-white active:scale-95 transition-all flex flex-col items-center shadow-xl"

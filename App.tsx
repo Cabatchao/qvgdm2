@@ -43,13 +43,9 @@ const App: React.FC = () => {
       const oneYear = 31536000000;
       
       let updatedStats = { ...parsed };
-      
-      // Reset daily attempts if a day has passed
       if (now - (parsed.lastPlayedTimestamp || 0) > oneDay) {
         updatedStats.dailyAttempts = 0;
       }
-
-      // Prune question history older than 1 year
       if (parsed.questionHistory) {
         updatedStats.questionHistory = parsed.questionHistory.filter(
           (entry: QuestionHistoryEntry) => now - entry.timestamp < oneYear
@@ -57,7 +53,6 @@ const App: React.FC = () => {
       } else {
         updatedStats.questionHistory = [];
       }
-
       return updatedStats;
     }
     return { 
@@ -112,7 +107,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden' && status === GameStatus.PLAYING) {
-        handleGameOver(lang === 'fr' ? 'ÉLIMINATION : Sortie de l\'application détectée.' : 'ELIMINATION: App exit detected.');
+        handleGameOver(lang === 'fr' ? 'ÉLIMINATION : Changement d\'onglet détecté.' : 'ELIMINATION: Tab switch detected.');
       }
     };
     const handleBlur = () => {
@@ -167,11 +162,7 @@ const App: React.FC = () => {
       setLoading(true);
       try {
         const difficulty = Math.min(15, currentLevel + 1);
-        const nextBatch = await fetchQuestions(
-          difficulty, 
-          lang, 
-          userStats.questionHistory.map(h => h.text)
-        );
+        const nextBatch = await fetchQuestions(difficulty, lang, userStats.questionHistory.map(h => h.text));
         if (nextBatch && nextBatch.length > 0) {
           const newQ = nextBatch[0];
           setCurrentQuestion(newQ);
@@ -179,15 +170,12 @@ const App: React.FC = () => {
           setHiddenOptions([]); 
           setSelectedOption(null);
           setAnswerState('idle');
-          
-          // Add to history
           setUserStats(prev => ({
             ...prev,
             questionHistory: [...prev.questionHistory, { text: newQ.text, timestamp: Date.now() }]
           }));
         }
       } catch (err) {
-        console.error("Failed to switch question", err);
         alert(lang === 'fr' ? "Erreur lors du changement de question." : "Error switching question.");
       } finally {
         setLoading(false);
@@ -200,14 +188,9 @@ const App: React.FC = () => {
       setPurchaseType('EXTRA_GAME');
       return;
     }
-
     setLoading(true);
     try {
-      const q = await fetchQuestions(
-        1, 
-        lang, 
-        userStats.questionHistory.map(h => h.text)
-      );
+      const q = await fetchQuestions(1, lang, userStats.questionHistory.map(h => h.text));
       const firstQ = q[0];
       setCurrentLevel(0);
       setCurrentQuestion(firstQ);
@@ -235,7 +218,6 @@ const App: React.FC = () => {
     if (answerState !== 'idle') return;
     setSelectedOption(index);
     setAnswerState('checking');
-    
     setTimeout(async () => {
       if (index === currentQuestion?.correctAnswer) {
         setAnswerState('correct');
@@ -244,17 +226,12 @@ const App: React.FC = () => {
           setStatus(GameStatus.WINNER);
           const jackpot = POINTS_LADDER[POINTS_LADDER.length - 1];
           setUserStats(prev => ({ ...prev, points: prev.points + jackpot }));
-          alert(lang === 'fr' ? 'FÉLICITATIONS !' : 'CONGRATULATIONS!');
         } else {
           setTimeout(async () => {
             setLoading(true);
             try {
               const difficulty = Math.min(15, nextLevel + 1);
-              const nextBatch = await fetchQuestions(
-                difficulty, 
-                lang, 
-                userStats.questionHistory.map(h => h.text)
-              );
+              const nextBatch = await fetchQuestions(difficulty, lang, userStats.questionHistory.map(h => h.text));
               const nextQ = nextBatch[0];
               setCurrentLevel(nextLevel);
               setCurrentQuestion(nextQ);
@@ -262,8 +239,6 @@ const App: React.FC = () => {
               setSelectedOption(null);
               setAnswerState('idle');
               setHiddenOptions([]);
-              
-              // Record in history
               setUserStats(prev => ({
                 ...prev,
                 questionHistory: [...prev.questionHistory, { text: nextQ.text, timestamp: Date.now() }]
@@ -279,30 +254,17 @@ const App: React.FC = () => {
     }, 800);
   };
 
-  const onPurchaseComplete = (method: 'points' | 'money') => {
+  const onPurchaseComplete = () => {
     if (!purchaseType) return;
-
     if (purchaseType === 'EXTRA_GAME') {
-      if (method === 'points') {
-        const cost = 20000;
-        setUserStats(prev => ({ ...prev, points: prev.points - cost, dailyAttempts: 0 }));
-      } else {
-        setUserStats(prev => ({ ...prev, dailyAttempts: 0 }));
-      }
+      setUserStats(prev => ({ ...prev, dailyAttempts: 0 }));
       setPurchaseType(null);
       setTimeout(() => startNewGame(), 500);
       return;
     }
-
-    if (method === 'points') {
-      const cost = LIFELINE_PRICES[purchaseType as LifelineType].points;
-      setUserStats(prev => ({ ...prev, points: prev.points - cost }));
-    }
-    
     if (purchaseType === '50:50') {
       setUserStats(prev => ({ ...prev, lastFreeLifelineTimestamp: Date.now() }));
     }
-
     const type = purchaseType as LifelineType;
     setPurchaseType(null);
     executeLifeline(type);
@@ -311,9 +273,7 @@ const App: React.FC = () => {
   const clickLifeline = (type: LifelineType) => {
     const lifeline = lifelines.find(l => l.type === type);
     if (!lifeline || lifeline.isUsedInCurrentGame) return;
-
     const needsPurchase = (type === '50:50' && !isFreeLifelineAvailable()) || lifeline.isPaid;
-
     if (needsPurchase) {
       setPurchaseType(type);
     } else {
@@ -332,14 +292,13 @@ const App: React.FC = () => {
 
   return (
     <div className="h-screen w-full flex flex-col items-center justify-between p-4 relative overflow-hidden bg-[#050510] text-white">
-      <div className="absolute inset-0 pointer-events-none select-none z-0">
+      <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(circle_at_center,#1e3a8a_0%,transparent_70%)] opacity-30"></div>
-        <div className="absolute top-0 left-0 w-full h-full border-[12px] border-[#0a1a44] opacity-50"></div>
       </div>
 
       <div className="w-full flex justify-between items-start z-10 max-w-6xl">
         <div className="flex flex-col">
-          <h1 className="text-3xl font-black text-yellow-500 tracking-tighter italic uppercase drop-shadow-[0_0_12px_rgba(234,179,8,0.6)]">
+          <h1 className="text-3xl font-black text-yellow-500 italic uppercase drop-shadow-[0_0_12px_rgba(234,179,8,0.6)]">
             {t.title}
           </h1>
           <div className="flex items-center gap-3 mt-1">
@@ -384,26 +343,12 @@ const App: React.FC = () => {
                 const isCurrent = idx === currentLevel;
                 const isPassed = idx < currentLevel;
                 const isBanked = idx === bankedLevel;
-
-                let borderClass = 'border-blue-900/60';
                 let bgClass = 'bg-blue-900/40 text-blue-800';
-
-                if (isCurrent) {
-                  bgClass = 'bg-yellow-500 text-black scale-125 z-20 shadow-2xl animate-pulse';
-                  borderClass = 'border-yellow-200';
-                } else if (isPassed) {
-                  bgClass = 'bg-green-600 text-white';
-                  borderClass = 'border-green-400';
-                } else if (isSafety) {
-                  bgClass = 'bg-blue-800 text-white';
-                  borderClass = 'border-blue-300';
-                }
-
-                if (isBanked) {
-                  borderClass = 'border-4 border-yellow-400';
-                  bgClass += ' ring-2 ring-yellow-400 ring-offset-2 ring-offset-[#050510]';
-                }
-
+                let borderClass = 'border-blue-900/60';
+                if (isCurrent) { bgClass = 'bg-yellow-500 text-black scale-125 z-20 shadow-2xl animate-pulse'; borderClass = 'border-yellow-200'; }
+                else if (isPassed) { bgClass = 'bg-green-600 text-white'; borderClass = 'border-green-400'; }
+                else if (isSafety) { bgClass = 'bg-blue-800 text-white'; borderClass = 'border-blue-300'; }
+                if (isBanked) { borderClass = 'border-4 border-yellow-400'; bgClass += ' ring-2 ring-yellow-400 ring-offset-2 ring-offset-[#050510]'; }
                 return (
                   <div key={idx} className={`h-10 flex flex-col items-center justify-center rounded-md text-[9px] font-black border transition-all ${bgClass} ${borderClass}`}>
                     <span className="opacity-40">{idx + 1}</span>
@@ -412,9 +357,7 @@ const App: React.FC = () => {
                 );
               })}
             </div>
-
             <Timer seconds={timeLeft} maxSeconds={QUESTION_TIMER} />
-
             <div className="w-full relative px-12 py-16 bg-[#0a0a25]/95 border-y-4 border-blue-500 shadow-xl backdrop-blur-xl hexagon-shape">
               <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-blue-600 text-[12px] font-black px-12 py-3 rounded-full border-2 border-blue-300 shadow-2xl uppercase tracking-[0.4em] text-white">
                 {POINTS_LADDER[currentLevel].toLocaleString()} {t.points}
@@ -423,7 +366,6 @@ const App: React.FC = () => {
                 {currentQuestion.text}
               </h3>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
               {currentQuestion.options.map((option, idx) => {
                 const isHidden = hiddenOptions.includes(idx);
@@ -435,7 +377,6 @@ const App: React.FC = () => {
                   else if (answerState === 'correct') cls += "bg-green-500 scale-105 shadow-xl";
                   else if (answerState === 'wrong') cls += "bg-red-500 scale-105 shadow-xl";
                 } else cls += "bg-blue-500/20 hover:bg-blue-400/50 hover:scale-[1.02]";
-
                 return (
                   <button key={idx} disabled={answerState !== 'idle' || isHidden} onClick={() => handleAnswer(idx)} className={cls}>
                     <div className="bg-[#050515] h-full w-full py-7 px-14 text-left hexagon-shape flex items-center group">
@@ -446,7 +387,6 @@ const App: React.FC = () => {
                 );
               })}
             </div>
-
             <div className="flex gap-8 mt-6">
               {lifelines.map((life) => {
                 const available = life.type === '50:50' ? isFreeLifelineAvailable() : true;
@@ -477,10 +417,8 @@ const App: React.FC = () => {
             <h2 className={`text-8xl font-black mb-10 italic tracking-tighter ${status === GameStatus.WINNER ? 'text-green-500' : 'text-red-600'}`}>
               {status === GameStatus.WINNER ? (lang === 'fr' ? 'Gagné !' : 'Winner!') : (lang === 'fr' ? 'Terminé' : 'Game Over')}
             </h2>
-            <div className="mb-12">
-              <p className="text-6xl text-white font-black">{userStats.points.toLocaleString()} PTS</p>
-            </div>
-            <button onClick={() => setStatus(GameStatus.START)} className="px-20 py-6 bg-gradient-to-r from-yellow-600 to-yellow-400 text-black font-black rounded-full text-3xl hover:shadow-2xl transition-all uppercase tracking-widest hover:scale-110">
+            <p className="text-6xl text-white font-black mb-12">{userStats.points.toLocaleString()} PTS</p>
+            <button onClick={() => setStatus(GameStatus.START)} className="px-20 py-6 bg-gradient-to-r from-yellow-600 to-yellow-400 text-black font-black rounded-full text-3xl hover:scale-110 transition-all uppercase tracking-widest">
               MENU
             </button>
           </div>
@@ -499,13 +437,7 @@ const App: React.FC = () => {
       )}
 
       {purchaseType && (
-        <PaymentModal 
-          type={purchaseType} 
-          lang={lang} 
-          userPoints={userStats.points}
-          onCancel={() => setPurchaseType(null)}
-          onPaid={onPurchaseComplete}
-        />
+        <PaymentModal type={purchaseType} lang={lang} userPoints={userStats.points} onCancel={() => setPurchaseType(null)} onPaid={onPurchaseComplete} />
       )}
 
       {loading && (
@@ -514,10 +446,6 @@ const App: React.FC = () => {
           <p className="text-yellow-500 font-black text-4xl uppercase tracking-[0.6em] animate-pulse italic">SYNC...</p>
         </div>
       )}
-
-      <div className="w-full text-center py-4 text-[10px] text-blue-900/40 font-black uppercase tracking-[15px] z-10 pointer-events-none">
-        MILLIONNAIRE ENGINE 3.0
-      </div>
     </div>
   );
 };

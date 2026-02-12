@@ -1,17 +1,15 @@
-# Déploiement Vercel (Corrigé)
+
+# Déploiement Web (Vercel)
 
 ## Étapes de déploiement
 
 1. **GitHub** : Poussez votre code sur votre dépôt.
 2. **Vercel** : Importez le projet. Vercel détectera automatiquement le preset **Vite**.
 3. **Variables d'environnement** :
-   - Allez dans les paramètres de votre projet sur Vercel.
-   - Ajoutez une variable nommée `API_KEY`.
-   - Collez votre clé API Google Gemini.
-4. **Déployer** : Lancez le déploiement.
+   - Ajoutez `API_KEY` (clé Gemini).
+4. **Déployer**.
 
-## Pourquoi c'était bloqué ?
-Le fichier `vercel.json` précédent forçait un mode "statique pur" qui ignorait vos fichiers `.tsx`. Le nouveau système utilise Vite pour transformer votre code React en JavaScript compréhensible par tous les navigateurs (et par les webviews iOS/Android).
+## Spécificités Web
+L'application est une **Single Page Application (SPA)**. Le fichier `vercel.json` est configuré pour rediriger toutes les routes vers `index.html`, ce qui est crucial pour le bon fonctionnement de React en production.
 
-## Support Mobile
-Pour transformer ce site en application iOS/Android, vous pouvez maintenant utiliser **Capacitor** ou simplement une **PWA** (Progressive Web App). Le code est structuré pour être compatible avec ces environnements.
+L'anti-triche repose sur l'API `Page Visibility` du navigateur. Si l'utilisateur change d'onglet, la partie s'arrête.
