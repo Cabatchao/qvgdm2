@@ -4,7 +4,7 @@ export interface Question {
   text: string;
   options: string[];
   correctAnswer: number;
-  difficulty: number; // 1 to 15
+  difficulty: number;
 }
 
 export interface QuestionHistoryEntry {
@@ -27,14 +27,19 @@ export interface Reward {
   points: number;
   image: string;
   description: { fr: string; en: string };
+  type: 'BONUS' | 'AVATAR' | 'REAL';
 }
 
 export enum GameStatus {
-  START = 'START',
+  HOME = 'HOME',
   PLAYING = 'PLAYING',
+  LADDER = 'LADDER',
+  CELEBRATION = 'CELEBRATION',
+  WINNER = 'WINNER',
   GAMEOVER = 'GAMEOVER',
-  BOUTIQUE = 'BOUTIQUE',
-  WINNER = 'WINNER'
+  SHOP = 'SHOP',
+  LEADERBOARD = 'LEADERBOARD',
+  PROFILE = 'PROFILE'
 }
 
 export type LifelineType = '50:50' | 'BANK' | 'SWITCH';
