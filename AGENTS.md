@@ -1,0 +1,7 @@
+- Ce projet sert à créer une landing page de recrutement franchisés Pizza Zio.
+- Utiliser uniquement les données validées dans data/franchiseData.ts.
+- Ne jamais inventer de chiffre.
+- Ne jamais promettre une rentabilité.
+- Toute information manquante doit être marquée comme “à confirmer par l’équipe Pizza Zio”.
+- Prioriser la conversion, la clarté, la crédibilité et la conformité.
+- Garder un code simple, robuste et maintenable.

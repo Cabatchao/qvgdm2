@@ -1,0 +1,1 @@
+export default function WhyZio(){const c=['Une histoire depuis 1983','Un concept accessible','Un réseau en développement','Une marque authentique'];return <section className='section'><h2 className='text-3xl font-bold'>Pourquoi Pizza Zio</h2><div className='mt-6 grid gap-4 md:grid-cols-4'>{c.map(x=><div key={x} className='card'>{x}</div>)}</div></section>}

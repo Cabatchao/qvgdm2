@@ -1,0 +1,16 @@
+export const franchiseData = {
+  brand: 'Pizza Zio',
+  foundingYear: 1983,
+  founder: 'Angelo Ascone',
+  origin: 'Calabre',
+  firstCity: 'Roubaix',
+  franchiseCount: 7,
+  entryFee: '30 000 €',
+  royalties: '5 %',
+  contractDuration: '10 ans',
+  estimatedInvestment: '80 000 € à 150 000 €',
+  openingTargetPerYear: 3,
+  formats: ['Livraison uniquement', 'Livraison + restaurant'],
+  priorityZones: ['Lille', 'Dunkerque', 'Grandes villes de la métropole lilloise'],
+  strategy: 'Développement régional d’abord, puis expansion nationale',
+};

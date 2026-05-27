@@ -1,16 +1,31 @@
+# Pizza Zio — Landing Page Franchise
 
-# Points Millionnaire - Web Edition
+Landing page de recrutement franchisés pour Pizza Zio, orientée conversion vers le CTA principal **Tester mon éligibilité**.
 
-Ce dépôt contient l'implémentation du jeu inspiré de **"Qui veut gagner des millions"**, optimisé exclusivement pour le **Web**.
+## Stack
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS
 
-## État actuel
+## Installation
+```bash
+npm install
+npm run dev
+```
 
-Le projet est une application web (SPA) performante :
-- Moteur de jeu temps réel (10s par question).
-- Protection anti-triche par détection de focus navigateur.
-- Génération dynamique de questions via l'IA Gemini.
-- Boutique de récompenses intégrée.
+## Commandes npm
+- `npm run dev` : mode développement
+- `npm run build` : build production
+- `npm run start` : lancement production
+- `npm run lint` : lint Next.js
 
-## Déploiement
+## Scoring lead
+Le scoring interne (non affiché au candidat) est implémenté dans `lib/scoreLead.ts` sur 100 points avec 4 statuts: Profil prioritaire, intéressant, à compléter, non prioritaire.
 
-L'application est conçue pour être déployée sur **Vercel** ou tout autre hébergeur web moderne.
+## Prochaines étapes
+- connecter Supabase
+- connecter Airtable
+- envoyer un email automatique
+- ajouter un chatbot FAQ franchise
+- ajouter analytics
+- ajouter A/B testing
