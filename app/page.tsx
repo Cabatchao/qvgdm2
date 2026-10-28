@@ -9,7 +9,16 @@ import Story from '@/components/Story';
 import FAQ from '@/components/FAQ';
 import LeadForm from '@/components/LeadForm';
 import Footer from '@/components/Footer';
+import { franchiseData } from '@/data/franchiseData';
+import { isLeadIntakeReady } from '@/lib/leadConfig';
 
-export default function Page(){
-  return <main><Hero/><section className='section'><h2 className='text-3xl font-bold'>Vous voulez entreprendre dans la restauration avec un concept déjà structuré ?</h2><p className='mt-4'>Ouvrir une pizzeria seul peut être complexe : choix du local, identité de marque, fournisseurs, communication, organisation, acquisition clients et lancement commercial. Avec Pizza Zio, vous rejoignez une enseigne familiale déjà implantée, avec un concept clair, une histoire forte et un accompagnement pensé pour aider les franchisés à ouvrir dans de bonnes conditions.</p></section><WhyZio/><Stats/><Formats/><Zones/><Profile/><Steps/><Story/><FAQ/><LeadForm/><Footer/></main>
+export const dynamic = 'force-dynamic';
+
+export default function Page() {
+  return <>
+    <a className="skip-link" href="#contenu">Aller au contenu</a>
+    <header className="site-header" id="haut"><div className="header-inner"><a className="brand" href="#haut">pizza <strong>zio</strong>{' '}<span>Depuis {franchiseData.foundingYear}</span></a><nav aria-label="Navigation principale"><a href="#concept">L’enseigne</a><a href="#profil">Votre profil</a><a href="#questions">Questions</a></nav><a href="#projet" className="cta header-cta">Votre projet <span aria-hidden="true">↗</span></a></div></header>
+    <main id="contenu"><Hero /><WhyZio /><Profile /><Formats /><div className="section financial-section"><Stats /></div><Story /><Zones /><Steps /><FAQ /><LeadForm available={isLeadIntakeReady()} /></main>
+    <Footer />
+  </>;
 }

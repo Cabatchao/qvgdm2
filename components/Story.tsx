@@ -1,1 +1,5 @@
-export default function Story(){return <section className='section'><h2 className='text-3xl font-bold'>Une enseigne familiale née d’une histoire italienne</h2><p className='mt-4'>L’histoire de Pizza Zio commence avec Angelo Ascone, originaire de Calabre, arrivé dans le Nord de la France avec l’envie de partager un savoir-faire italien authentique. En 1983, la première pizzeria ouvre à Roubaix. Depuis, l’enseigne s’est construite autour de valeurs simples : qualité, générosité, convivialité et transmission familiale. Aujourd’hui, Pizza Zio souhaite écrire une nouvelle étape de son histoire : développer son réseau en franchise avec des entrepreneurs qui partagent cette vision.</p></section>}
+import { franchiseData } from '@/data/franchiseData';
+
+export default function Story() {
+  return <section className="story-section" aria-labelledby="story-title"><div className="section story-grid"><div><p className="eyebrow">De la Calabre au Nord</p><h2 id="story-title">L’histoire commence<br />à {franchiseData.firstCity}.</h2></div><div><p className="story-year">{franchiseData.foundingYear}</p><p>{franchiseData.founder}, originaire de {franchiseData.origin}, ouvre la première Pizza Zio à {franchiseData.firstCity}. C’est cette histoire italienne, ancrée dans le Nord, qui donne son nom à votre futur projet.</p></div></div></section>;
+}
