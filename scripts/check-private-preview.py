@@ -1,5 +1,7 @@
 """Small HTTPS smoke check for the owner-private, static consultation preview."""
 import getpass
+import hashlib
+from pathlib import Path
 import json
 import sys
 import urllib.error
@@ -41,7 +43,7 @@ class SameOriginRedirect(urllib.request.HTTPRedirectHandler):
 opener = urllib.request.build_opener(SameOriginRedirect())
 
 
-def request(route, *, authenticated=True, method='GET', data=None, extra=None):
+def request(route, *, authenticated=True, method='GET', data=None, extra=None, binary=False):
     headers = {'User-Agent': 'Pizza-Zio-owned-preview-smoke/1.0'}
     if authenticated:
         headers['OAI-Sites-Authorization'] = 'Bearer ' + token
@@ -54,11 +56,11 @@ def request(route, *, authenticated=True, method='GET', data=None, extra=None):
     body = result.read(262145)
     if len(body) > 262144:
         raise ValueError('Response exceeded smoke-test bound.')
-    return result.status, dict(result.headers.items()), body.decode('utf-8', errors='replace')
+    return result.status, dict(result.headers.items()), body if binary else body.decode('utf-8', errors='replace')
 
 
 results = []
-for route, title in [('/', 'Votre projet de pizzeria.'), ('/confidentialite/', 'Données personnelles'), ('/mentions-legales/', 'Mentions légales')]:
+for route, title in [('/', 'La carte des futurs franchisés'), ('/confidentialite/', 'Données personnelles'), ('/mentions-legales/', 'Mentions légales')]:
     status, headers, body = request(route)
     page = Page()
     page.feed(body)
@@ -69,13 +71,27 @@ for route, title in [('/', 'Votre projet de pizzeria.'), ('/confidentialite/', '
 for route in ['/.env', '/.git/config', '/lib/leadHandler.ts']:
     status, headers, body = request(route)
     # Some static hosts serve their index as a fallback. Never call that a 404.
-    assert status in (403, 404) or (status == 200 and 'Votre projet de pizzeria.' in body), f'{route}: unexpected exposed response'
+    assert status in (403, 404) or (status == 200 and 'La carte des futurs franchisés' in body), f'{route}: unexpected exposed response'
     assert '[remote "origin"]' not in body and 'LEAD_WEBHOOK_TOKEN=' not in body and 'export async function' not in body
     results.append({'path': route, 'status': status, 'sourceExposed': False})
 status, headers, body = request('/api/lead', method='POST', data=b'{}', extra={'Content-Type': 'application/json'})
 assert status in (403, 404, 405), f'Unexpected submission response: {status}'
 results.append({'path': '/api/lead', 'method': 'POST', 'status': status, 'collection': False})
+# Compare the assets actually used by the redesigned page with their local source.
+public = Path(__file__).resolve().parents[1] / 'public'
+asset_paths = [
+    'images/zio-pizza.webp', 'images/zio-pizza-480.webp',
+    'images/zio-service.webp', 'images/zio-service-480.webp',
+    'images/zio-restaurant.webp', 'images/zio-restaurant-640.webp',
+    'fonts/AwesomeSerif-Light.woff2', 'fonts/AwesomeSerif-Regular.woff2',
+    'fonts/ProximaNova-Regular.woff2', 'fonts/ProximaNova-Semibold.woff2',
+]
+for asset in asset_paths:
+    status, headers, body = request('/' + asset, binary=True)
+    assert status == 200, f'{asset}: asset unavailable'
+    assert hashlib.sha256(body).digest() == hashlib.sha256((public / asset).read_bytes()).digest(), f'{asset}: deployed content mismatch'
+    results.append({'path': '/' + asset, 'status': status, 'matchesSource': True})
 status, headers, body = request('/', authenticated=False)
-assert 'Votre projet de pizzeria.' not in body, 'Private content visible anonymously'
+assert 'La carte des futurs franchisés' not in body, 'Private content visible anonymously'
 results.append({'anonymousStatus': status, 'privateContentVisible': False})
 print(json.dumps({'origin': origin, 'tlsValidation': True, 'checks': results}, ensure_ascii=False))

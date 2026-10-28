@@ -46,7 +46,7 @@ async function waitFor(url) {
 }
 
 try {
-  for (const path of ['app', 'components', 'lib', 'data', 'next.config.mjs', 'proxy.ts', 'package.json', 'tsconfig.json', 'tailwind.config.ts', 'postcss.config.mjs']) await cp(join(repo, path), join(app, path), { recursive: true });
+  for (const path of ['app', 'components', 'lib', 'data', 'public', 'next.config.mjs', 'proxy.ts', 'package.json', 'tsconfig.json', 'tailwind.config.ts', 'postcss.config.mjs']) await cp(join(repo, path), join(app, path), { recursive: true });
   // Copy-on-write where supported, normal copy otherwise; unlike hard links,
   // this also works when the CI workspace and temporary directory use different disks.
   await cp(join(repo, 'node_modules'), join(app, 'node_modules'), {
@@ -54,8 +54,9 @@ try {
   });
   await writeFile(settingsPath, JSON.stringify(settings), { mode: 0o600 });
   const home = await readFile(join(app, 'app/page.tsx'), 'utf8');
-  if (!home.includes('available={isLeadIntakeReady()}')) throw new Error('The production page changed: review the isolated test injection.');
-  await writeFile(join(app, 'app/page.tsx'), home.replace("import { isLeadIntakeReady } from '@/lib/leadConfig';", '').replace('available={isLeadIntakeReady()}', 'available={true}'));
+  const closedForm = '<LeadForm available={isLeadIntakeReady()} />';
+  if (!home.includes(closedForm)) throw new Error('The production page changed: review the isolated test injection.');
+  await writeFile(join(app, 'app/page.tsx'), home.replace(closedForm, '<LeadForm available={true} />'));
   const fixtureConfig = { origin: settings.origin, webhookUrl: 'http://127.0.0.1:3221/lead', redisUrl: 'http://127.0.0.1:3221/redis', webhookToken: settings.webhookToken, redisToken: settings.redisToken, hashSecret: settings.hashSecret, vercel: false };
   await writeFile(join(app, 'app/api/lead/route.ts'), `// Generated in a temporary directory only; never deployed or imported by production.\nimport { handleLeadRequest } from '../../../lib/leadService';\nexport const runtime='nodejs';\nexport const dynamic='force-dynamic';\nexport async function POST(request: Request) { return handleLeadRequest(request, ${JSON.stringify(fixtureConfig)}); }\n`);
   const nextConfig = await readFile(join(app, 'next.config.mjs'), 'utf8');

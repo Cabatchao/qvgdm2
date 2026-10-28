@@ -27,7 +27,7 @@ test('le parcours candidat fonctionne sans erreur JavaScript ni ressource requis
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
   await expect(page.locator('.header-cta')).toBeVisible();
-  await page.getByRole('link', { name: 'Présenter mon projet' }).click();
+  await page.getByRole('link', { name: 'Préparer mon projet' }).click();
   await expect(page).toHaveURL(/#projet$/);
   await expect(page.locator('#projet')).toContainText('Les candidatures en ligne ne sont pas encore ouvertes.');
   await page.getByRole('link', { name: 'Données personnelles', exact: true }).click();
@@ -68,7 +68,7 @@ test('l’accessibilité automatique et le mouvement réduit restent utilisables
 });
 
 test('les pages restent lisibles à 320 px et en grand écran', async ({ page }) => {
-  for (const width of [320, 390, 768, 1440]) {
+  for (const width of [320, 390, 621, 700, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
     const dimensions = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, content: document.documentElement.scrollWidth }));
@@ -116,7 +116,7 @@ test.describe('sans JavaScript', () => {
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await page.locator('.faq-list summary').first().click();
     await expect(page.locator('.faq-list details').first()).toHaveAttribute('open', '');
-    await page.getByRole('link', { name: 'Présenter mon projet' }).click();
+    await page.getByRole('link', { name: 'Préparer mon projet' }).click();
     const project = page.locator('#projet');
     await expect(project).toContainText('Les candidatures en ligne ne sont pas encore ouvertes.');
     await expect(project.locator('input, textarea, select, button[type="submit"]')).toHaveCount(0);

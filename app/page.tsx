@@ -1,8 +1,5 @@
 import Hero from '@/components/Hero';
-import Stats from '@/components/Stats';
-import WhyZio from '@/components/WhyZio';
 import Formats from '@/components/Formats';
-import Zones from '@/components/Zones';
 import Profile from '@/components/Profile';
 import Steps from '@/components/Steps';
 import Story from '@/components/Story';
@@ -17,8 +14,9 @@ export const dynamic = 'force-dynamic';
 export default function Page() {
   return <>
     <a className="skip-link" href="#contenu">Aller au contenu</a>
-    <header className="site-header" id="haut"><div className="header-inner"><a className="brand" href="#haut">pizza <strong>zio</strong>{' '}<span>Depuis {franchiseData.foundingYear}</span></a><nav aria-label="Navigation principale"><a href="#concept">L’enseigne</a><a href="#profil">Votre profil</a><a href="#questions">Questions</a></nav><a href="#projet" className="cta header-cta">Votre projet <span aria-hidden="true">↗</span></a></div></header>
-    <main id="contenu"><Hero /><WhyZio /><Profile /><Formats /><div className="section financial-section"><Stats /></div><Story /><Zones /><Steps /><FAQ /><LeadForm available={isLeadIntakeReady()} /></main>
-    <Footer />
+    <aside className="editorial-rail" aria-hidden="true"><span className="rail-monogram">Z.</span><span className="rail-title">Pizza Zio · La franchise</span><span className="rail-line"><span className="reading-progress" /></span><span className="rail-year">{franchiseData.foundingYear}</span></aside>
+    <div className="site-shell"><header className="site-header" id="haut"><div className="header-inner"><a className="brand" href="#haut" aria-label="Pizza Zio, accueil">Pizza <span>Zio</span><span aria-hidden="true">.</span></a><nav aria-label="Navigation principale"><a href="#concept">La maison</a><a href="#profil">Votre profil</a><a href="#questions">Les questions</a></nav><a href="#projet" className="header-cta">Votre projet <span aria-hidden="true">↗</span></a></div></header>
+    <main id="contenu"><Hero available={isLeadIntakeReady()} /><Story /><Profile /><Formats /><Steps /><FAQ /><LeadForm available={isLeadIntakeReady()} /></main>
+    <Footer /></div>
   </>;
 }

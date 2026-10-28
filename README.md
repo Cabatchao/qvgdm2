@@ -10,6 +10,8 @@ Les anciens fichiers du jeu Vite/Gemini ont été retirés de cette branche. Leu
 
 Un [aperçu privé de consultation](https://pizza-zio-apercu-prive-octobre.maxatemax.chatgpt.site) est publié, avec connexion ChatGPT. Il reprend le rendu HTML compilé des trois pages, sans JavaScript applicatif ni collecte. Il ne constitue pas le déploiement Next.js de production. Voir la [recette HTTPS et ses limites](docs/pizza-zio-recette-en-ligne.md).
 
+La [refonte visuelle « La Carte »](docs/pizza-zio-refonte-visuelle.md) reprend la typographie de la landing historique et des photographies existantes, avec animations CSS progressives. Les images et polices sont locales ; leurs versions mobiles limitent le poids du rendu. Les 20 contrôles navigateur incluent leur chargement et la réduction des mouvements.
+
 ## Installation et vérification
 
 Node.js 24 recommandé (`.nvmrc`). Les versions sont verrouillées dans `package-lock.json`.

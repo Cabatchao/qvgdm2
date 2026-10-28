@@ -15,7 +15,7 @@ test('le parcours de lancement est lisible et ses destinations existent', async 
     .filter((href) => href.length > 1 && !document.getElementById(decodeURIComponent(href.slice(1)))));
   expect(invalidFragments).toEqual([]);
 
-  await page.getByRole('link', { name: 'Présenter mon projet' }).click();
+  await page.getByRole('link', { name: 'Préparer mon projet' }).click();
   await expect(page).toHaveURL(/#projet$/);
   await expect(page.locator('#projet')).toBeVisible();
   expect(errors).toEqual([]);
@@ -50,7 +50,7 @@ test('les pages légales sont accessibles et ramènent au site', async ({ page }
 });
 
 test('aucun débordement horizontal sur mobile, tablette et ordinateur', async ({ page }) => {
-  for (const width of [320, 390, 768, 1440]) {
+  for (const width of [320, 390, 621, 700, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
     const dimensions = await page.evaluate(() => ({
@@ -73,10 +73,114 @@ test('la réduction des animations conserve le contenu et les liens', async ({ p
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Présenter mon projet' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Préparer mon projet' })).toBeVisible();
   await expect(page.locator('#projet')).toBeVisible();
   const scrollBehavior = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior);
   expect(scrollBehavior).toBe('auto');
+});
+
+test('les photos se chargent sans décalage et les polices locales sont actives', async ({ page, baseURL }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  let releaseImages = () => {};
+  const imageGate = new Promise<void>((resolve) => { releaseImages = resolve; });
+  await page.route('**/images/**', async (route) => {
+    await imageGate;
+    await route.continue();
+  });
+
+  const reserved: { width: number; height: number }[] = [];
+  const images = page.locator('main img');
+  try {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => document.fonts.ready);
+    expect(await images.count()).toBeGreaterThan(0);
+    for (const image of await images.all()) {
+      await image.scrollIntoViewIfNeeded();
+      await expect(image).toBeVisible();
+      await expect(image).toBeInViewport();
+      const dimensions = await image.evaluate((element: HTMLImageElement) => ({
+        width: element.getBoundingClientRect().width,
+        height: element.getBoundingClientRect().height,
+        intrinsicWidth: Number(element.getAttribute('width')),
+        intrinsicHeight: Number(element.getAttribute('height')),
+        naturalWidth: element.naturalWidth,
+      }));
+      expect(dimensions.naturalWidth).toBe(0);
+      expect(dimensions.intrinsicWidth).toBeGreaterThan(0);
+      expect(dimensions.intrinsicHeight).toBeGreaterThan(0);
+      expect(dimensions.width).toBeGreaterThan(0);
+      expect(dimensions.height).toBeGreaterThan(0);
+      reserved.push(dimensions);
+    }
+  } finally {
+    releaseImages();
+  }
+
+  await expect.poll(() => images.evaluateAll((elements: HTMLImageElement[]) => elements
+    .filter((image) => !image.complete || image.naturalWidth === 0 || image.naturalHeight === 0)
+    .map((image) => image.currentSrc || image.src))).toEqual([]);
+  for (const [index, image] of (await images.all()).entries()) {
+    await image.scrollIntoViewIfNeeded();
+    await expect(image).toBeInViewport();
+    const rendered = await image.boundingBox();
+    expect(rendered!.width).toBeCloseTo(reserved[index].width, 0);
+    expect(rendered!.height).toBeCloseTo(reserved[index].height, 0);
+    expect(new URL(await image.evaluate((element: HTMLImageElement) => element.currentSrc)).origin).toBe(baseURL);
+  }
+
+  const fonts = await page.evaluate(() => ({
+    body: getComputedStyle(document.body).fontFamily.split(',')[0].replaceAll('"', '').trim(),
+    heading: getComputedStyle(document.querySelector('h1')!).fontFamily.split(',')[0].replaceAll('"', '').trim(),
+    loaded: [...document.fonts].filter((face) => face.status === 'loaded').map((face) => face.family.replaceAll('"', '')),
+    resources: performance.getEntriesByType('resource').map(({ name }) => name).filter((name) => /\.(woff2?|ttf|otf)(\?|$)/.test(name)),
+  }));
+  expect(fonts.body).toBe('Proxima Nova');
+  expect(fonts.heading).toBe('Awesome Serif');
+  expect(fonts.loaded).toEqual(expect.arrayContaining(['Proxima Nova', 'Awesome Serif']));
+  expect(fonts.resources.length).toBeGreaterThan(0);
+  for (const resource of fonts.resources) {
+    expect(new URL(resource).origin).toBe(baseURL);
+    expect(new URL(resource).pathname).toMatch(/^\/fonts\/.+\.woff2$/);
+  }
+});
+
+test('les animations CSS progressent et la préférence de réduction les désactive', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  const title = page.getByRole('heading', { level: 1 });
+  const entrance = await title.evaluate((element) => {
+    const animation = element.getAnimations().find((candidate) => candidate instanceof CSSAnimation);
+    if (!animation) return null;
+    animation.currentTime = 0;
+    animation.play();
+    return { duration: Number(animation.effect?.getTiming().duration), translate: getComputedStyle(element).translate };
+  });
+  expect(entrance).not.toBeNull();
+  expect(entrance!.duration).toBeGreaterThan(0);
+  expect(entrance!.translate).not.toBe('none');
+  await expect.poll(() => title.evaluate((element) => getComputedStyle(element).translate)).not.toBe(entrance!.translate);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const motion = await page.evaluate(() => ({
+    scroll: getComputedStyle(document.documentElement).scrollBehavior,
+    targets: [...document.querySelectorAll('[data-reveal], [data-hero-reveal], [data-photo] img, .reading-progress')].map((element) => {
+      const style = getComputedStyle(element);
+      return { animation: style.animationName, transition: style.transitionDuration, translate: style.translate };
+    }),
+    running: document.getAnimations().filter((animation) => animation.playState === 'running' || animation.pending).length,
+  }));
+  expect(motion.scroll).toBe('auto');
+  expect(motion.targets.length).toBeGreaterThan(0);
+  for (const target of motion.targets) {
+    expect(target.animation).toBe('none');
+    expect(target.transition).toBe('0s');
+    expect(target.translate).toBe('none');
+  }
+  expect(motion.running).toBe(0);
+  await expect(title).toBeVisible();
+  await page.getByRole('link', { name: 'Préparer mon projet' }).click();
+  await expect(page).toHaveURL(/#projet$/);
+  await expect(page.locator('#projet')).toBeInViewport();
 });
 
 

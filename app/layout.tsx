@@ -1,4 +1,5 @@
 import './globals.css';
+import './motion.css';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';

@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, cp } from 'node:fs/promises';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
 
@@ -10,7 +10,7 @@ if (origin.protocol !== 'http:' || origin.hostname !== '127.0.0.1' || origin.pat
   throw new Error('A loopback HTTP origin and absolute output directory are required.');
 }
 const assets = new Set();
-const policy = "default-src 'none'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; object-src 'none'; connect-src 'none'";
+const policy = "default-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; connect-src 'none'";
 for (const route of ['/', '/confidentialite', '/mentions-legales']) {
   const response = await fetch(new URL(route, origin), { redirect: 'error' });
   if (!response.ok) throw new Error(`${route}: HTTP ${response.status}`);
@@ -43,4 +43,7 @@ for (const asset of assets) {
   await writeFile(destination, await response.text());
 }
 await writeFile(path.join(output, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+for (const directory of ['images', 'fonts']) {
+  await cp(path.join(process.cwd(), 'public', directory), path.join(output, directory), { recursive: true });
+}
 console.log(JSON.stringify({ routes: 3, stylesheets: assets.size, javascript: false, collection: false, output }));

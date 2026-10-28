@@ -1,0 +1,76 @@
+/* Progressive enhancement: content is visible before, during and without motion. */
+@keyframes zio-hero-arrival {
+  from { translate: 0 12px; }
+  to { translate: 0 0; }
+}
+
+@keyframes zio-page-arrival {
+  from { translate: 0 18px; }
+  to { translate: 0 0; }
+}
+
+@keyframes zio-reading {
+  from { scale: 1 0; }
+  to { scale: 1 1; }
+}
+
+/* A decorative progress line is omitted where no scroll timeline is available. */
+.reading-progress { visibility: hidden; transform-origin: 50% 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-hero-reveal] {
+    animation: zio-hero-arrival 640ms cubic-bezier(.2, .65, .3, 1) both;
+  }
+  [data-hero-reveal="2"] { animation-delay: 70ms; }
+  [data-hero-reveal="3"] { animation-delay: 140ms; }
+
+  @supports (animation-timeline: view()) and (animation-range: entry 0% entry 85%) {
+    @media (min-width: 48rem) {
+      [data-reveal]:not([data-hero-reveal]) {
+        animation: zio-page-arrival 1s linear both;
+        animation-timeline: view(block);
+        animation-range: entry 0% entry 85%;
+      }
+    }
+  }
+
+  @supports (animation-timeline: scroll(root block)) {
+    .reading-progress {
+      visibility: visible;
+      animation: zio-reading 1s linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  [data-photo] img { transition: scale 650ms cubic-bezier(.2, .65, .3, 1); }
+  [data-photo]:hover img { scale: 1.025; }
+}
+
+/* Keyboard focus never waits for an editorial transition. */
+[data-reveal]:focus-within,
+[data-hero-reveal]:focus-within { animation: none !important; opacity: 1; translate: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  [data-reveal], [data-hero-reveal], [data-photo] img, .reading-progress {
+    animation: none !important;
+    transition: none !important;
+    translate: none !important;
+  }
+  [data-reveal], [data-hero-reveal] { opacity: 1 !important; }
+  [data-photo] img { scale: 1 !important; }
+  .reading-progress { visibility: hidden; }
+}
+
+@media print {
+  [data-reveal], [data-hero-reveal], [data-photo] img {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    translate: none !important;
+    scale: 1 !important;
+  }
+  .reading-progress { display: none; }
+}
