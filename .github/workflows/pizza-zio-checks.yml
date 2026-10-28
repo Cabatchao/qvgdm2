@@ -25,7 +25,19 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
       - run: npm ci
+      - name: Install Redis for isolated integration tests
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends redis-server redis-tools
+          redis-server --version
+          redis-cli --version
       - run: npm run check
+        env:
+          PIZZA_ZIO_REDIS_BIN: /usr/bin/redis-server
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      - run: npm run test:integration
+        env:
+          REDIS_SERVER_PATH: /usr/bin/redis-server
+          REDIS_CLI_PATH: /usr/bin/redis-cli
       - run: npm audit --audit-level=high

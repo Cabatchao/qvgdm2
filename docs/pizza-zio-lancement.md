@@ -8,11 +8,15 @@ La collecte est fermée par défaut. Le serveur doit exiger la disponibilité m�
 
 Les chiffres du fichier historique `data/franchiseData.ts` ne suffisent pas à établir leur actualité. Le nombre d’implantations, les conditions financières, la disponibilité territoriale et tout délai de réponse doivent être reconfirmés par l’équipe Pizza Zio avant réintroduction dans une campagne.
 
-## Cible de départ proposée
+## Hypothèses de cible à valider
 
-**Un responsable ou ancien responsable de restauration ou de commerce alimentaire, habitué à gérer une équipe, qui souhaite exploiter lui-même une pizzeria sur un territoire confirmé disponible.** Un horizon de préparation de six à douze mois est une hypothèse de campagne, pas une condition d’éligibilité.
+**Aucun segment n’est encore confirmé par des résultats de recrutement ou de campagne Pizza Zio.** Le message commun invite des porteurs de projet en activité, en reconversion ou déjà indépendants à présenter leur parcours et leur envie de préparer une pizzeria. Ce positionnement est une hypothèse de communication ; les critères d’admission restent à confirmer par l’équipe Pizza Zio.
 
-Le message doit parler de métier : présence dans l’établissement, organisation quotidienne, équipe, service et préparation du projet. L’expérience sert à conduire un échange humain ; elle ne crée pas un droit automatique à une franchise et son absence ne déclenche pas un rejet automatique.
+Comparer des responsables de restauration ou de commerce alimentaire, des managers en reconversion venant d’autres secteurs et, si le réseau accepte ce type de projet, des indépendants. Le premier groupe reste une variante d’essai fondée sur la proximité supposée des tâches ; ce n’est pas une cible prouvée supérieure aux autres. Un horizon de préparation de six à douze mois reste également une hypothèse, pas une condition d’éligibilité.
+
+Le message doit inviter à préciser le rôle souhaité dans l’établissement, le service, l’équipe et la préparation du projet. L’expérience sert à conduire un échange humain ; elle ne crée pas un droit automatique à une franchise et son absence ne déclenche pas un rejet automatique. Un manager salarié peut avoir dirigé une équipe sans avoir créé d’entreprise : encourager cette précision dans le champ de motivation, sans utiliser la création passée d’une entreprise comme prérequis.
+
+La [note sur les preuves et la validation de la cible](pizza-zio-cible-preuves.md) distingue sources officielles, inférences métier et tests à conduire. Les simulations logicielles ne valident pas une demande commerciale réelle.
 
 Commencer sur **une seule zone réellement ouverte**, validée par le réseau. Lille et Dunkerque figurent dans le document historique ; leur disponibilité n’est pas établie. Aucun seuil d’apport personnel n’est inventé. Un montant d’investissement total ne doit pas être présenté comme l’apport exigé.
 

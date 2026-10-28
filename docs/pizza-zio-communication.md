@@ -2,17 +2,19 @@
 
 Ces brouillons ne sont pas publiés. Ils ne deviennent utilisables qu’après ouverture effective de la collecte, validation du territoire, du destinataire et de la notice. Remplacer les variables entre crochets par des informations approuvées. Ne jamais publier une variable restante.
 
-## Message principal
+Le message commun reste ouvert aux différents parcours. Les variantes par métier sont des hypothèses d’acquisition à comparer, sans preuve actuelle qu’un segment soit le plus performant pour Pizza Zio. Voir [les fondements et le protocole de validation](pizza-zio-cible-preuves.md).
 
-**Vous connaissez la restauration. Et si vous prépariez votre propre pizzeria ?**
+## Message principal — parcours et reconversion
 
-Vous aimez organiser un service, accompagner une équipe et être présent sur le terrain. Pizza Zio vous propose de présenter votre projet de franchise à [ZONE_CONFIRMÉE].
+**Votre parcours peut devenir le point de départ d’un projet de pizzeria.**
 
-Votre expérience, la ville envisagée et votre calendrier permettront à l’équipe d’engager un premier échange écrit avec vous. Les conditions du projet et sa faisabilité seront étudiées ensemble.
+En activité, en reconversion ou déjà indépendant, vous envisagez de préparer un projet de franchise ? Présentez votre parcours et votre projet Pizza Zio à [ZONE_CONFIRMÉE].
+
+Parlez-nous de vos expériences de service, de gestion ou de management, y compris dans un autre métier, ainsi que de votre ville et de votre calendrier. Les conditions du projet et sa faisabilité feront l’objet d’un échange avec l’équipe. Le premier contact est prévu par écrit.
 
 **Présenter mon projet : [URL_VALIDÉE]**
 
-## Variante pour un responsable en activité
+## Variante à tester — responsable de restauration ou de commerce alimentaire
 
 **Du management d’un établissement à votre projet d’entrepreneur.**
 
@@ -21,6 +23,8 @@ Vous gérez déjà une équipe en restauration ou dans le commerce alimentaire e
 Parlez-nous de votre parcours et du rôle que vous souhaitez tenir dans l’établissement. Le premier contact se fait par écrit.
 
 **Découvrir le projet : [URL_VALIDÉE]**
+
+Cette variante s’adresse à un segment d’essai. Elle ne définit pas une exigence d’admission et ne permet pas de conclure que les autres métiers seraient moins adaptés.
 
 ## Publication courte
 
@@ -65,7 +69,8 @@ Ne pas conserver la demande pour une future prospection sans définir le cadre c
 
 ## Contrôle éditorial avant publication
 
-- Une cible, une zone confirmée et un lien de candidature fonctionnel.
+- Une hypothèse de segment explicitement définie pour chaque essai, une zone confirmée et un lien de candidature fonctionnel.
+- Ne pas confondre expérience de management salarié et création d’entreprise ; aucun parcours n’est automatiquement accepté ou rejeté sur cette base.
 - Aucun nombre d’implantations, revenu, rendement, délai d’ouverture, apport minimum ou délai de réponse non approuvé.
 - Pas de fausse urgence, de « places limitées » non prouvées ou d’acceptation garantie.
 - Photos réelles autorisées et décrites fidèlement ; pas de faux franchisé ni de faux témoignage.

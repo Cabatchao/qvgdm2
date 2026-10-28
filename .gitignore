@@ -16,6 +16,7 @@ node_modules
 test-results/
 playwright-report/
 coverage/
+__pycache__/
 dist
 dist-ssr
 *.local

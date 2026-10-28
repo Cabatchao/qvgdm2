@@ -8,6 +8,8 @@ La collecte reste **fermée par défaut**. L’interface et l’API n’accepten
 
 Les anciens fichiers du jeu Vite/Gemini ont été retirés de cette branche. Leur historique Git reste disponible. Aucune clé Gemini n’est nécessaire à Pizza Zio.
 
+Un [aperçu privé de consultation](https://pizza-zio-apercu-prive-octobre.maxatemax.chatgpt.site) est publié, avec connexion ChatGPT. Il reprend le rendu HTML compilé des trois pages, sans JavaScript applicatif ni collecte. Il ne constitue pas le déploiement Next.js de production. Voir la [recette HTTPS et ses limites](docs/pizza-zio-recette-en-ligne.md).
+
 ## Installation et vérification
 
 Node.js 24 recommandé (`.nvmrc`). Les versions sont verrouillées dans `package-lock.json`.
@@ -27,7 +29,9 @@ npm run test:e2e
 npm audit --audit-level=high
 ```
 
-Les tests serveur utilisent des adaptateurs simulés et des identités fictives. Les tests UI montent le formulaire isolément ; aucun mode de contournement public n’est exposé. Les tests navigateur lancent le build de production local, collecte désactivée.
+Les tests serveur utilisent des adaptateurs simulés et des identités fictives ; huit scénarios supplémentaires exécutent le script de limitation sur un Redis réel lorsque `PIZZA_ZIO_REDIS_BIN` est défini. Les tests UI montent le formulaire isolément ; aucun mode de contournement public n’est exposé. Les tests navigateur lancent le build de production local, collecte désactivée.
+
+`npm run test:integration` lance une recette isolée avec navigateur, HTTP, Redis et SQLite réels : neuf tests couvrent réception durable, réessai après réponse perdue, envois simultanés et pannes. Les prérequis et la portée sont décrits dans [pizza-zio-integration.md](docs/pizza-zio-integration.md). La CI installe Redis et rejoue ces contrôles. `npm run test:online` est une suite séparée de 22 contrôles pour la future origine HTTPS Next.js, exigeant `PIZZA_ZIO_PREVIEW_URL` ; elle n’a pas encore été exécutée.
 
 ## Parcours de candidature
 
@@ -105,7 +109,8 @@ Une CSP avec nonce protège les scripts et styles ; le rendu HTML est dynamique 
 - [Plan de lancement, cible et recette](docs/pizza-zio-lancement.md)
 - [Textes de communication à valider](docs/pizza-zio-communication.md)
 - [Données à confirmer](docs/pizza-zio-validation-donnees.md)
+- [Fondements et validation des hypothèses de cible](docs/pizza-zio-cible-preuves.md)
 
-La campagne vise en priorité un futur exploitant ayant une expérience opérationnelle de restauration ou de commerce alimentaire. Le territoire réellement disponible reste à confirmer. Aucune promesse de rendement, chiffre réseau non reconfirmé ou délai de réponse garanti n’est publié.
+Le message commun accueille différents parcours : activité salariée, reconversion ou expérience d’indépendant. Les responsables de restauration ou de commerce alimentaire constituent un segment d’essai parmi d’autres ; aucune donnée de recrutement ou de campagne Pizza Zio ne confirme encore leur supériorité. L’expérience de management peut être présentée dans la motivation, même sans création d’entreprise antérieure. Les critères d’admission et le territoire réellement disponible restent à confirmer par l’équipe Pizza Zio. Aucune promesse de rendement, chiffre réseau non reconfirmé ou délai de réponse garanti n’est publié.
 
 - [Résultats de vérification et limites](docs/pizza-zio-verification.md)
