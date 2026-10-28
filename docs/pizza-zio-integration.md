@@ -1,6 +1,6 @@
 # Pizza Zio — recette complète avec services réels
 
-Exécutée le 28 octobre 2026. **Neuf scénarios réussis**, après compilation de production d’une copie temporaire de l’application. La dernière passe navigateur a duré 13,6 secondes, hors compilation.
+Exécutée le 28 octobre 2026. **Neuf scénarios réussis**, après compilation de production d’une copie temporaire de l’application. La dernière passe navigateur locale a duré 15,9 secondes, hors compilation.
 
 ## Ce qui a été exercé
 
@@ -53,3 +53,5 @@ Cette preuve porte sur une réception locale réelle et isolée, avec un récept
 La configuration est injectée dans la copie de recette pour permettre les adresses HTTP locales ; les contrôles HTTPS et l’ouverture métier de la production sont vérifiés séparément. Le trafic de cette recette n’emprunte ni Internet ni une terminaison TLS. Les essais sur le lien déployé ont donc une portée complémentaire, et leurs résultats ne doivent pas être confondus avec cette chaîne de réception locale.
 
 La première boucle a révélé une ambiguïté de sélecteur entre l’alerte du formulaire et l’annonceur de route Next.js. Le test cible désormais l’alerte de la section de candidature. Aucun contrôle n’a été désactivé et aucun défaut applicatif n’a été masqué.
+
+La première exécution GitHub a ensuite révélé que le workspace et le répertoire temporaire utilisent des volumes différents : les liens physiques de dépendances échouaient avant tout scénario. Le lanceur effectue désormais une copie, avec copie sur écriture lorsqu’elle est disponible, et conserve les liens symboliques internes. Le message de disponibilité de Redis est reconnu avec ou sans suffixe `tcp` pour les versions fournies par Ubuntu ; le PING authentifié et la vérification du processus propre restent en place.

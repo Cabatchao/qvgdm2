@@ -4,6 +4,7 @@
  * Optional PLAYWRIGHT_EXECUTABLE_PATH selects an already available Chromium.
  */
 import { mkdtemp, readFile, writeFile, cp, rm } from 'node:fs/promises';
+import { constants } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { randomBytes } from 'node:crypto';
@@ -46,7 +47,11 @@ async function waitFor(url) {
 
 try {
   for (const path of ['app', 'components', 'lib', 'data', 'next.config.mjs', 'proxy.ts', 'package.json', 'tsconfig.json', 'tailwind.config.ts', 'postcss.config.mjs']) await cp(join(repo, path), join(app, path), { recursive: true });
-  await finish(start('cp', ['-al', join(repo, 'node_modules'), join(app, 'node_modules')]));
+  // Copy-on-write where supported, normal copy otherwise; unlike hard links,
+  // this also works when the CI workspace and temporary directory use different disks.
+  await cp(join(repo, 'node_modules'), join(app, 'node_modules'), {
+    recursive: true, verbatimSymlinks: true, mode: constants.COPYFILE_FICLONE,
+  });
   await writeFile(settingsPath, JSON.stringify(settings), { mode: 0o600 });
   const home = await readFile(join(app, 'app/page.tsx'), 'utf8');
   if (!home.includes('available={isLeadIntakeReady()}')) throw new Error('The production page changed: review the isolated test injection.');
@@ -61,11 +66,13 @@ try {
   await writeFile(redisConfiguration, `bind 127.0.0.1\nport ${settings.redisPort}\nsave ""\nappendonly no\nprotected-mode yes\nrequirepass ${settings.redisPassword}\ndir ${work}\n`, { mode: 0o600 });
   const ownedRedis = start(redisServer, [redisConfiguration], { stdio: ['ignore', 'pipe', 'inherit'] });
   await new Promise((resolveReady, reject) => {
+    let startupOutput = '';
     const timer = setTimeout(() => reject(new Error('Our Redis process did not become ready')), 10_000);
     ownedRedis.once('exit', () => { clearTimeout(timer); reject(new Error('Redis could not start; refusing to contact an existing instance.')); });
     ownedRedis.stdout.on('data', chunk => {
       process.stdout.write(chunk);
-      if (chunk.toString().includes('Ready to accept connections tcp')) { clearTimeout(timer); resolveReady(); }
+      startupOutput = (startupOutput + chunk.toString()).slice(-8192);
+      if (startupOutput.includes('Ready to accept connections')) { clearTimeout(timer); resolveReady(); }
     });
   });
   await finish(start(redisCli, ['-h', '127.0.0.1', '-p', String(settings.redisPort), 'PING'], { env: { ...environment, REDISCLI_AUTH: settings.redisPassword } }));
