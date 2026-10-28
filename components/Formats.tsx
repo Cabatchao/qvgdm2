@@ -1,1 +1,12 @@
-export default function Formats(){return <section className='section'><h2 className='text-3xl font-bold'>Formats de franchise</h2><div className='mt-6 grid gap-4 md:grid-cols-2'><div className='card'><h3 className='font-semibold'>Livraison uniquement</h3><p>Un format plus léger, pensé pour la vente à emporter et la livraison, avec une structure plus compacte et un investissement plus maîtrisé.</p></div><div className='card'><h3 className='font-semibold'>Livraison + restaurant</h3><p>Un format plus complet, permettant d’accueillir les clients sur place tout en développant la vente à emporter et la livraison.</p></div></div></section>}
+import { franchiseData } from '@/data/franchiseData';
+
+export default function Formats() {
+  return <section id="formats" className="section formats-section" aria-labelledby="formats-title">
+    <div className="section-index"><span>03</span><p>À la carte</p><span aria-hidden="true">↘</span></div>
+    <div className="formats-layout"><div className="section-heading" data-reveal><p className="eyebrow">Imaginer votre établissement</p><h2 id="formats-title">Un projet.<br /><em>Votre façon<br />de le faire vivre.</em></h2><p>Une première préférence suffit. Les formats disponibles et leurs modalités sont à confirmer par l’équipe Pizza Zio.</p></div>
+      <div className="format-menu">{franchiseData.formats.map((format, index) => <article className="format-row" key={format} data-reveal><span className="format-number" aria-hidden="true">0{index + 1}</span><div><h3>{format}</h3><p>{index === 0 ? 'Un établissement centré sur la livraison.' : 'L’accueil au restaurant, associé à la livraison.'}</p></div><span aria-hidden="true">↗</span></article>)}
+        <aside className="conditions-note" data-reveal><p className="eyebrow">Avant de décider</p><h3>Des conditions à préciser ensemble.</h3><p>Apport personnel, investissement total, droit d’entrée, redevances et territoires ouverts sont à confirmer par l’équipe Pizza Zio.</p><p>Aucun résultat financier n’est garanti.</p><a className="text-link" href="#questions">Les questions à se poser <span aria-hidden="true">↓</span></a></aside>
+      </div>
+    </div>
+  </section>;
+}

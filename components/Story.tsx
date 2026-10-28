@@ -1,1 +1,13 @@
-export default function Story(){return <section className='section'><h2 className='text-3xl font-bold'>Une enseigne familiale née d’une histoire italienne</h2><p className='mt-4'>L’histoire de Pizza Zio commence avec Angelo Ascone, originaire de Calabre, arrivé dans le Nord de la France avec l’envie de partager un savoir-faire italien authentique. En 1983, la première pizzeria ouvre à Roubaix. Depuis, l’enseigne s’est construite autour de valeurs simples : qualité, générosité, convivialité et transmission familiale. Aujourd’hui, Pizza Zio souhaite écrire une nouvelle étape de son histoire : développer son réseau en franchise avec des entrepreneurs qui partagent cette vision.</p></section>}
+import { franchiseData } from '@/data/franchiseData';
+import EditorialPhoto from './EditorialPhoto';
+
+export default function Story() {
+  return <section id="concept" className="section story-section" aria-labelledby="story-title">
+    <div className="section-index"><span>01</span><p>La maison</p><span aria-hidden="true">↘</span></div>
+    <div className="story-heading" data-reveal><p className="eyebrow">De la Calabre à Roubaix</p><h2 id="story-title">Une histoire italienne.<br /><em>Une table à partager.</em></h2></div>
+    <div className="story-layout">
+      <figure className="restaurant-figure" data-reveal><EditorialPhoto name="restaurant" alt="La salle et le comptoir d’un restaurant Pizza Zio." /><figcaption>À l’intérieur de Pizza Zio.</figcaption></figure>
+      <div className="story-text" data-reveal><p className="large-copy">Tout commence en {franchiseData.foundingYear}, quand {franchiseData.founder}, originaire de {franchiseData.origin}, ouvre sa première pizzeria à {franchiseData.firstCity}.</p><p>Aujourd’hui, votre projet peut écrire une nouvelle page de cette histoire italienne, ancrée dans le Nord.</p><dl className="menu-facts"><div><dt>Les racines</dt><dd>{franchiseData.origin}</dd></div><div><dt>La première adresse</dt><dd>{franchiseData.firstCity}</dd></div><div><dt>Le début de l’histoire</dt><dd>{franchiseData.foundingYear}</dd></div></dl></div>
+    </div>
+  </section>;
+}

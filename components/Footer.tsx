@@ -1,1 +1,6 @@
-export default function Footer(){return <footer className='bg-zioBlack py-12 text-white'><div className='section py-0'><h2 className='text-3xl font-bold'>Et si votre ville accueillait la prochaine Pizza Zio ?</h2><p className='mt-4 max-w-3xl'>Pizza Zio recherche des entrepreneurs motivés pour accompagner son développement régional, avec une ambition nationale. Si vous souhaitez ouvrir une pizzeria avec une enseigne familiale, authentique et en pleine structuration, c’est le moment de présenter votre projet.</p><a href='#eligibilite' className='cta mt-6 inline-block'>Tester mon éligibilité</a></div></footer>}
+import Link from 'next/link';
+import { franchiseData } from '@/data/franchiseData';
+
+export default function Footer() {
+  return <footer className="site-footer"><div className="section footer-top"><a href="#haut" className="footer-wordmark" aria-label="Pizza Zio, retour en haut">Pizza <span>Zio</span><span className="wordmark-dot" aria-hidden="true">.</span></a><p>Racines italiennes.<br />Esprit du Nord.<br /><span>Depuis {franchiseData.foundingYear}.</span></p></div><div className="section footer-bottom"><span>Franchise Pizza Zio</span><nav aria-label="Liens utiles"><Link href="/confidentialite">Données personnelles</Link><Link href="/mentions-legales">Mentions légales</Link><a href="#haut">Retour en haut ↑</a></nav></div></footer>;
+}
