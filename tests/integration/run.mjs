@@ -54,9 +54,9 @@ try {
   });
   await writeFile(settingsPath, JSON.stringify(settings), { mode: 0o600 });
   const home = await readFile(join(app, 'app/page.tsx'), 'utf8');
-  const closedForm = '<LeadForm available={isLeadIntakeReady()} />';
+  const closedForm = 'const available = isLeadIntakeReady();';
   if (!home.includes(closedForm)) throw new Error('The production page changed: review the isolated test injection.');
-  await writeFile(join(app, 'app/page.tsx'), home.replace(closedForm, '<LeadForm available={true} />'));
+  await writeFile(join(app, 'app/page.tsx'), home.replace(closedForm, 'const available = true;'));
   const fixtureConfig = { origin: settings.origin, webhookUrl: 'http://127.0.0.1:3221/lead', redisUrl: 'http://127.0.0.1:3221/redis', webhookToken: settings.webhookToken, redisToken: settings.redisToken, hashSecret: settings.hashSecret, vercel: false };
   await writeFile(join(app, 'app/api/lead/route.ts'), `// Generated in a temporary directory only; never deployed or imported by production.\nimport { handleLeadRequest } from '../../../lib/leadService';\nexport const runtime='nodejs';\nexport const dynamic='force-dynamic';\nexport async function POST(request: Request) { return handleLeadRequest(request, ${JSON.stringify(fixtureConfig)}); }\n`);
   const nextConfig = await readFile(join(app, 'next.config.mjs'), 'utf8');

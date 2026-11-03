@@ -267,6 +267,12 @@ if (process.env.PIZZA_ZIO_REDIS_BIN) {
         for (let i = 0; i < 3; i++) assert.deepEqual(await evaluate([`ip:${i}`, keys[1], keys[2], `id:${i}`]), [1, 0]);
         assert.equal((await evaluate(['ip:4', keys[1], keys[2], 'id:4']))[0], 0);
       });
+      await t.test('blocked attempts do not consume the global quota for other candidates', async () => {
+        await redis('FLUSHDB');
+        for (let i = 0; i < 101; i++) await evaluate([keys[0], 'blocked-email', keys[2], 'attempt:' + i]);
+        assert.deepEqual(await evaluate(['fresh-ip', 'fresh-email', keys[2], 'fresh-id']), [1, 0]);
+        assert.equal(await redis('GET', keys[2]), '4');
+      });
       await t.test('global quota applies across independent addresses and emails', async () => {
         await redis('FLUSHDB');
         for (let i = 0; i < 100; i++) assert.deepEqual(await evaluate([`ip:${i}`, `email:${i}`, keys[2], `id:${i}`]), [1, 0]);

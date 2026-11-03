@@ -4,13 +4,8 @@ export const franchiseData = {
   founder: 'Angelo Ascone',
   origin: 'Calabre',
   firstCity: 'Roubaix',
-  franchiseCount: 7,
-  entryFee: '30 000 €',
-  royalties: '5 %',
-  contractDuration: '10 ans',
-  estimatedInvestment: '80 000 € à 150 000 €',
-  openingTargetPerYear: 3,
-  formats: ['Livraison uniquement', 'Livraison + restaurant'],
-  priorityZones: ['Lille', 'Dunkerque', 'Grandes villes de la métropole lilloise'],
-  strategy: 'Développement régional d’abord, puis expansion nationale',
+  formats: ['À emporter', 'Avec restaurant'] as const,
+  // Parcours décrit par l’enseigne sur pizza-zio.fr/devenir-franchise/.
+  onboarding: 'Le parcours présenté par Pizza Zio comprend une immersion en restaurant, une formation sur les sites pilotes et un accompagnement à l’ouverture.',
+  recruitingArea: 'Nord (59)',
 };

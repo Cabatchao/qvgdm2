@@ -63,7 +63,7 @@ test('le formulaire fermé ne saisit ni ne transmet de données', () => {
   const rendered = testing.render(createElement(LeadForm));
   assert.equal(rendered.container.querySelector('form'), null);
   assert.equal(rendered.container.querySelector('input'), null);
-  assert.match(rendered.container.textContent ?? '', /ne sont pas encore ouvertes/);
+  assert.match(rendered.container.textContent ?? '', /formulaire de cette page est en préparation/);
   assert.equal(fetchMock.mock.callCount(), 0);
 });
 

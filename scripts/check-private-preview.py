@@ -60,18 +60,27 @@ def request(route, *, authenticated=True, method='GET', data=None, extra=None, b
 
 
 results = []
-for route, title in [('/', 'La carte des futurs franchisés'), ('/confidentialite/', 'Données personnelles'), ('/mentions-legales/', 'Mentions légales')]:
+for route, title in [('/', 'Ouvrez votre pizzeria dans le'), ('/confidentialite/', 'Données personnelles'), ('/mentions-legales/', 'Mentions légales')]:
     status, headers, body = request(route)
     page = Page()
     page.feed(body)
     assert status == 200 and title in body, f'{route}: page not served'
-    assert page.scripts == 0 and page.forms == 0, f'{route}: unexpected executable content or form'
+    assert page.forms == 0, f'{route}: unexpected form'
+    if route == '/' and 'zio-presentation' in body:
+        import base64
+        import re
+        scripts = re.findall(r'<script id="zio-presentation">([\s\S]*?)</script>', body)
+        assert len(scripts) == page.scripts == 1
+        digest = base64.b64encode(hashlib.sha256(scripts[0].encode()).digest()).decode()
+        assert f"'sha256-{digest}'" in page.csp
+    else:
+        assert page.scripts == 0
     assert "default-src 'none'" in page.csp and "form-action 'none'" in page.csp, f'{route}: restrictive CSP missing'
-    results.append({'path': route, 'status': status, 'scripts': 0, 'forms': 0, 'csp': True})
+    results.append({'path': route, 'status': status, 'scripts': page.scripts, 'forms': 0, 'csp': True})
 for route in ['/.env', '/.git/config', '/lib/leadHandler.ts']:
     status, headers, body = request(route)
     # Some static hosts serve their index as a fallback. Never call that a 404.
-    assert status in (403, 404) or (status == 200 and 'La carte des futurs franchisés' in body), f'{route}: unexpected exposed response'
+    assert status in (403, 404) or (status == 200 and 'Ouvrez votre pizzeria dans le' in body), f'{route}: unexpected exposed response'
     assert '[remote "origin"]' not in body and 'LEAD_WEBHOOK_TOKEN=' not in body and 'export async function' not in body
     results.append({'path': route, 'status': status, 'sourceExposed': False})
 status, headers, body = request('/api/lead', method='POST', data=b'{}', extra={'Content-Type': 'application/json'})
@@ -92,6 +101,6 @@ for asset in asset_paths:
     assert hashlib.sha256(body).digest() == hashlib.sha256((public / asset).read_bytes()).digest(), f'{asset}: deployed content mismatch'
     results.append({'path': '/' + asset, 'status': status, 'matchesSource': True})
 status, headers, body = request('/', authenticated=False)
-assert 'La carte des futurs franchisés' not in body, 'Private content visible anonymously'
+assert 'Ouvrez votre pizzeria dans le' not in body, 'Private content visible anonymously'
 results.append({'anonymousStatus': status, 'privateContentVisible': False})
 print(json.dumps({'origin': origin, 'tlsValidation': True, 'checks': results}, ensure_ascii=False))

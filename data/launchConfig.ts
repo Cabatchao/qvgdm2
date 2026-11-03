@@ -63,8 +63,8 @@ export const launchConfig: LaunchConfiguration = {
     technicalProcessing: null,
   },
   operations: {
-    availableTerritories: [],
-    writtenFollowUpOwnerConfirmed: false,
+    availableTerritories: ['Nord (59)'],
+    writtenFollowUpOwnerConfirmed: true,
     receivingSystemTested: false,
   },
 };

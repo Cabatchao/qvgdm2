@@ -31,3 +31,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Owner-private presentation media, staged separately for the approved build.
+public/video/zio-cuisine.mp4
+public/images/zio-*-v2*.webp

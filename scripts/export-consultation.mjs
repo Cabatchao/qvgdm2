@@ -1,4 +1,5 @@
-import { mkdir, writeFile, cp } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { mkdir, writeFile, readFile, cp } from 'node:fs/promises';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
 
@@ -17,7 +18,7 @@ for (const route of ['/', '/confidentialite', '/mentions-legales']) {
   const dom = new JSDOM(await response.text());
   const document = dom.window.document;
   if (document.querySelector('form')) throw new Error('Refusing to export an open intake form.');
-  if (route === '/' && !document.body.textContent.includes('Les candidatures en ligne ne sont pas encore ouvertes.')) {
+  if (route === '/' && !document.body.textContent.includes('Le formulaire de cette page est en préparation.')) {
     throw new Error('Closed-intake notice missing.');
   }
   for (const node of document.querySelectorAll('script, link[as="script"], link[rel="modulepreload"]')) node.remove();
@@ -27,9 +28,22 @@ for (const route of ['/', '/confidentialite', '/mentions-legales']) {
     if (url.origin !== origin.origin || !/^\/_next\/static\/[a-zA-Z0-9_./-]+\.css$/.test(url.pathname)) throw new Error('Unexpected stylesheet');
     assets.add(url.pathname);
   }
+  const hasFilm = Boolean(document.querySelector('video[data-hero-video]'));
+  let pagePolicy = policy;
+  if (hasFilm) {
+    const code = await readFile('public/presentation.js', 'utf8');
+    const script = document.createElement('script');
+    script.id = 'zio-presentation';
+    script.textContent = code;
+    document.body.append(script);
+    const digest = createHash('sha256').update(code).digest('base64');
+    pagePolicy += "; media-src 'self'; script-src 'sha256-" + digest + "'";
+    await mkdir(path.join(output, 'video'), { recursive: true });
+    await cp('public/video/zio-cuisine.mp4', path.join(output, 'video/zio-cuisine.mp4'));
+  }
   const meta = document.createElement('meta');
   meta.httpEquiv = 'Content-Security-Policy';
-  meta.content = policy;
+  meta.content = pagePolicy;
   document.head.prepend(meta);
   const destination = path.join(output, route === '/' ? '' : route.slice(1));
   await mkdir(destination, { recursive: true });
@@ -46,4 +60,4 @@ await writeFile(path.join(output, 'robots.txt'), 'User-agent: *\nDisallow: /\n')
 for (const directory of ['images', 'fonts']) {
   await cp(path.join(process.cwd(), 'public', directory), path.join(output, directory), { recursive: true });
 }
-console.log(JSON.stringify({ routes: 3, stylesheets: assets.size, javascript: false, collection: false, output }));
+console.log(JSON.stringify({ routes: 3, stylesheets: assets.size, applicationJavaScript: false, collection: false, output }));
