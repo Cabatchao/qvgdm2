@@ -22,6 +22,12 @@ Un candidat souhaite exploiter une pizzeria dans le Nord. Il découvre les forma
 | Un visiteur consulte la page sur téléphone | Pas de film chargé d’office | Vérifié avec Chromium sur la compilation avec médias. L’affiche reste visible et la lecture est volontaire. |
 | Le lecteur d’écran annonce la commande vidéo | Le nom annoncé correspond au texte visible | Le premier test mobile a détecté une divergence. La commande utilise maintenant son texte visible. |
 
+## Résultats de la recette technique
+
+La compilation de production a passé 53 tests serveur, 10 tests du formulaire, 24 tests navigateur sur mobile et ordinateur et 9 scénarios d’intégration. Les 22 contrôles HTTPS supplémentaires ont été exécutés sur le serveur local de recette. Sur les pages légales, le navigateur interrompait une requête de préchargement. Après correction des liens, la navigation a réussi au même contrôle.
+
+Sur trois chargements mobiles simulés à froid, le contenu principal s’est affiché en 1,55 à 1,70 seconde, avec un décalage visuel cumulé inférieur à 0,006 et sans téléchargement automatique de la vidéo. Ces mesures portent sur la compilation avec les médias privés. L’audit des dépendances de production n’a signalé aucune vulnérabilité connue. L’audit complet a encore signalé onze entrées de gravité modérée dans les dépendances des outils de développement.
+
 ## Préparer l’environnement destiné au public
 
 1. Confirmer le domaine, le projet d’hébergement et l’éditeur juridique. La marque a validé le Nord et les formats. Le site officiel identifie SARL AMM pour son propre site. L’identité juridique et l’hébergeur de cette nouvelle landing doivent être confirmés séparément.

@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { franchiseData } from '@/data/franchiseData';
 import { FormEvent, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
@@ -134,7 +133,7 @@ export default function LeadForm({ available = false }: { available?: boolean })
           <div className="form-field form-wide"><label htmlFor="message">Une précision ou une question ? (facultatif)</label><textarea id="message" name="message" rows={3} maxLength={2000} value={form.message} onChange={event => update('message', event.target.value)} aria-invalid={Boolean(fieldErrors.message)} aria-describedby={describe('message')} />{fieldError('message')}</div>
         </div></fieldset>
         <div className="form-honeypot" aria-hidden="true"><label htmlFor="website">Laisser ce champ vide</label><input disabled={busy || !hydrated} id="website" name="website" tabIndex={-1} autoComplete="off" maxLength={200} value={form.website} onChange={event => update('website', event.target.value)} /></div>
-        <div className="form-privacy"><label htmlFor="rgpd"><input id="rgpd" name="rgpd" type="checkbox" required disabled={busy || !hydrated} checked={form.rgpd} onChange={event => update('rgpd', event.target.checked)} aria-invalid={Boolean(fieldErrors.rgpd)} aria-describedby={describe('rgpd', 'privacy-hint')} /><span>J’ai pris connaissance de la <Link href="/confidentialite" target="_blank" rel="noopener">notice sur les données personnelles <span className="sr-only">(nouvel onglet)</span></Link> concernant l’étude de ma candidature. <span aria-hidden="true">*</span></span></label>{fieldError('rgpd')}<p id="privacy-hint">Ces informations servent à étudier votre demande et à échanger sur votre projet. Cette démarche ne vous inscrit à aucune communication commerciale.</p></div>
+        <div className="form-privacy"><label htmlFor="rgpd"><input id="rgpd" name="rgpd" type="checkbox" required disabled={busy || !hydrated} checked={form.rgpd} onChange={event => update('rgpd', event.target.checked)} aria-invalid={Boolean(fieldErrors.rgpd)} aria-describedby={describe('rgpd', 'privacy-hint')} /><span>J’ai pris connaissance de la <a href="/confidentialite" target="_blank" rel="noopener">notice sur les données personnelles <span className="sr-only">(nouvel onglet)</span></a> concernant l’étude de ma candidature. <span aria-hidden="true">*</span></span></label>{fieldError('rgpd')}<p id="privacy-hint">Ces informations servent à étudier votre demande et à échanger sur votre projet. Cette démarche ne vous inscrit à aucune communication commerciale.</p></div>
         <button className="cta form-submit" type="submit" disabled={busy || !hydrated}>{busy ? 'Transmission en cours…' : 'Envoyer mon projet'} <span aria-hidden="true">↗</span></button><p className="form-endnote">L’envoi ne constitue aucun engagement contractuel.</p>
       </form>}
     </>}
