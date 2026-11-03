@@ -4,6 +4,7 @@ import AxeBuilder from '@axe-core/playwright';
 test('le parcours de lancement est lisible et ses destinations existent', async ({ page, isMobile }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
   await expect(page.getByRole('main')).toBeVisible();
@@ -15,9 +16,14 @@ test('le parcours de lancement est lisible et ses destinations existent', async 
     .filter((href) => href.length > 1 && !document.getElementById(decodeURIComponent(href.slice(1)))));
   expect(invalidFragments).toEqual([]);
 
+  const compare = page.getByRole('link', { name: 'Comparer les deux formats' });
+  await expect(compare).toBeInViewport();
+  await compare.click();
+  await expect(page).toHaveURL(/#formats$/);
+  await expect(page.locator('#formats-title')).toBeInViewport();
   await page.getByRole('link', { name: 'Préparer mon projet' }).click();
   await expect(page).toHaveURL(/#projet$/);
-  await expect(page.locator('#projet')).toBeVisible();
+  await expect(page.getByText('Ouverture prochaine des candidatures', { exact: true })).toBeInViewport();
   expect(errors).toEqual([]);
 });
 

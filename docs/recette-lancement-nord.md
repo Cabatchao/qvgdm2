@@ -26,7 +26,20 @@ Un candidat souhaite exploiter une pizzeria dans le Nord. Il découvre les forma
 
 La compilation de production a passé 53 tests serveur, 10 tests du formulaire, 24 tests navigateur sur mobile et ordinateur et 9 scénarios d’intégration. Les 22 contrôles HTTPS supplémentaires ont été exécutés sur le serveur local de recette. Sur les pages légales, le navigateur interrompait une requête de préchargement. Après correction des liens, la navigation a réussi au même contrôle.
 
-Sur trois chargements mobiles simulés à froid, le contenu principal s’est affiché en 1,55 à 1,70 seconde, avec un décalage visuel cumulé inférieur à 0,006 et sans téléchargement automatique de la vidéo. Ces mesures portent sur la compilation avec les médias privés. L’audit des dépendances de production n’a signalé aucune vulnérabilité connue. L’audit complet a encore signalé onze entrées de gravité modérée dans les dépendances des outils de développement.
+Sur trois chargements mobiles simulés à froid, le contenu principal s’est affiché en 1,55 à 1,70 seconde, avec un décalage visuel cumulé inférieur à 0,006 et sans téléchargement automatique de la vidéo. Ces mesures portent sur la compilation avec les médias privés. Le premier audit des dépendances de production n’a signalé aucune vulnérabilité connue. L’audit complet initial avait relevé onze entrées modérées dans les outils de développement.
+
+## Contre-vérification du 3 novembre
+
+| Test effectué | Écart observé | Résultat après correction |
+| --- | --- | --- |
+| Choisir un format depuis le premier écran | Aucun raccourci vers la comparaison sur mobile. | Le lien « Comparer les deux formats » amène aux cartes à 320, 390 et 1 440 px. |
+| Ouvrir la rubrique projet sur un écran de 320 × 568 px | L’explication de fermeture débutait à 843 px du haut de l’écran de destination. | Le texte débute à 243 px et tient au premier écran après le clic. |
+| Préparer une candidature à Lille puis consulter les pages légales | 17 champs utilisateur visibles et sortie du formulaire possible depuis le pied de page. | 8 champs visibles, 9 précisions dépliables. L’ouverture des deux pages légales au clavier préserve les informations dans l’onglet du formulaire. |
+| Perdre la réponse après écriture, modifier la saisie puis réessayer | Une nouvelle référence pouvait créer deux dossiers. | En cas d’envoi incertain, le bouton de vérification reprend les valeurs et la référence initiales. Un dossier avant et après le réessai. |
+| Envoyer depuis 100 adresses IPv6 du même sous-réseau, puis depuis un réseau indépendant | Le premier réseau épuisait le quota général. | Cinq essais du premier réseau ont été acceptés, 95 refusés. L’autre candidat a reçu une confirmation. |
+| Exporter dans une destination contenant un fichier témoin ou interrompre l’export | Un ancien fichier pouvait être republié. | Une destination non vide est refusée. Une interruption laisse la destination finale vide. Le déploiement reprend uniquement les fichiers du nouvel export. |
+
+Le nouvel audit npm a signalé zéro vulnérabilité connue après correction de `minimatch` pour les outils de développement. Le contournement par rotation IPv6 a été testé avec Redis local. Les pertes de confirmation et les doubles requêtes ont été testées avec un récepteur local persistant. Le scénario d’ajout dans Google Sheets a été vérifié séparément. Les essais navigateur automatisés utilisent Chromium. La conversion commerciale, Safari sur iPhone physique et les notifications de la future production restent à mesurer.
 
 ## Préparer l’environnement destiné au public
 

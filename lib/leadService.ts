@@ -1,6 +1,6 @@
 import 'server-only';
 import { createHmac } from 'node:crypto';
-import { isIP } from 'node:net';
+import { isIP, SocketAddress } from 'node:net';
 import { PRIVACY_NOTICE_VERSION } from '../data/launchConfig';
 import type { LeadConfig } from './leadConfig';
 import { qualifyLead } from './scoreLead';
@@ -93,7 +93,20 @@ function hash(config: LeadConfig, purpose: string, input: string): string {
 function clientBucket(request: Request, config: LeadConfig): string {
   // Vercel overwrites this header at its edge. Never trust arbitrary proxy headers elsewhere.
   const ip = config.vercel ? request.headers.get('x-vercel-forwarded-for')?.trim() : undefined;
-  return ip && isIP(ip) ? ip : 'shared-untrusted-proxy';
+  if (!ip || ip.includes('%')) return 'shared-untrusted-proxy';
+  const family = isIP(ip);
+  if (family === 4) return ip;
+  if (family !== 6) return 'shared-untrusted-proxy';
+  const address = new SocketAddress({ address: ip, family: 'ipv6' }).address;
+  const mapped = address.slice('::ffff:'.length);
+  if (address.startsWith('::ffff:') && isIP(mapped) === 4) return mapped;
+
+  // Multiple devices and temporary addresses in one IPv6 /64 share a quota.
+  const [left, right] = address.split('::');
+  const leading = left ? left.split(':') : [];
+  const trailing = right ? right.split(':') : [];
+  const words = [...leading, ...Array(8 - leading.length - trailing.length).fill('0'), ...trailing];
+  return words.slice(0, 4).join(':') + '::/64';
 }
 
 export async function enforceLeadLimits(request: Request, lead: ValidatedLead, config: LeadConfig, fetcher: Fetcher): Promise<void> {

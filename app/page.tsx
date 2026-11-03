@@ -57,7 +57,7 @@ export default function Page() {
           <FAQ available={available} />
           <LeadForm available={available} />
         </main>
-        <Footer />
+        <Footer applicationOpen={available} />
       </div>
       {cinemaEnabled && (
         <Script src="/presentation.js" strategy="afterInteractive" />

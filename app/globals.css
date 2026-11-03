@@ -1397,7 +1397,7 @@ figcaption {
   min-height: 48px;
   color: var(--ink);
   background: #fff;
-  border: 1px solid #90988a;
+  border: 1px solid #788372;
   border-radius: 5px;
   padding: 11px 12px;
   font-size: 1rem;
@@ -1490,6 +1490,8 @@ figcaption {
   padding-left: 20px;
 }
 .error-panel a {
+  display: inline-block;
+  min-height: 32px;
   text-decoration: underline;
 }
 .success-panel {
@@ -1514,7 +1516,7 @@ figcaption {
 .preparation-list {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 35px;
-  margin: 0 0 40px;
+  margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
@@ -1537,20 +1539,6 @@ figcaption {
   margin-top: 12px;
   font-size: 0.94rem;
 }
-.preparation-notice {
-  background: 0 0;
-  border: 0;
-  border-top: 1px solid #b7bfad;
-  max-width: none;
-  padding: 24px 0 0;
-}
-.preparation-notice h3 {
-  font-size: 0.95rem;
-}
-.preparation-notice p {
-  color: var(--muted);
-  font-size: 0.85rem;
-}
 @media (max-width: 620px) {
   .steps-section > .section {
     padding-block: 62px;
@@ -1558,7 +1546,6 @@ figcaption {
   .preparation-list {
     grid-template-columns: 1fr;
     gap: 25px;
-    margin-bottom: 30px;
   }
   .preparation-list li {
     padding: 22px 0 0 42px;
@@ -1583,4 +1570,26 @@ figcaption {
   .form-privacy > p {
     margin-left: 0;
   }
+}
+
+.form-optional {
+  margin-top: 24px;
+  border-block: 1px solid var(--border);
+}
+.form-optional summary {
+  padding: 14px 0;
+  font-weight: 700;
+  cursor: pointer;
+}
+.form-optional summary span {
+  font-weight: 400;
+}
+.form-optional > .form-grid {
+  padding: 8px 0 24px;
+}
+.receipt-retry {
+  margin: 0 0 28px;
+}
+.receipt-retry p {
+  margin-bottom: 12px;
 }

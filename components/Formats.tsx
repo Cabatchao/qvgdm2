@@ -23,9 +23,8 @@ export default function Formats({
           </h2>
         </div>
         <p>
-          Deux façons d’envisager votre projet.
-          <br />
-          Une première préférence pour ouvrir la discussion.
+          Où vous voyez-vous au quotidien, au comptoir ou en salle ?
+          Vous pouvez encore hésiter entre les deux.
         </p>
       </div>
       <div className="formats-grid">
@@ -39,7 +38,10 @@ export default function Formats({
           <div className="format-copy">
             <span className="format-index">01</span>
             <h3>{franchiseData.formats[0]}</h3>
-            <p>Les clients commandent et repartent avec leur repas.</p>
+            <p>
+              Les clients retirent leur commande au comptoir. Comment
+              organiseriez-vous leur accueil à l’heure de pointe ?
+            </p>
           </div>
         </article>
         <article className="format-panel" data-reveal="true">
@@ -52,7 +54,10 @@ export default function Formats({
           <div className="format-copy">
             <span className="format-index">02</span>
             <h3>{franchiseData.formats[1]}</h3>
-            <p>Un restaurant qui accueille les clients à table.</p>
+            <p>
+              Les clients s’installent à table. Comment imaginez-vous la salle
+              et le service en lien avec la cuisine ?
+            </p>
           </div>
         </article>
       </div>
@@ -64,6 +69,10 @@ export default function Formats({
             {launchConfig.operations.availableTerritories.join(', ')}
           </p>
         )}
+        <p>
+          Indiquez la ville du Nord où vous souhaitez vous installer. L’équipe
+          Pizza Zio vérifiera avec vous si la zone est disponible.
+        </p>
         <p>
           L’apport, l’investissement, le droit d’entrée
           et les redevances sont à confirmer par l’équipe Pizza Zio. Aucun

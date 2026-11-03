@@ -50,8 +50,8 @@ export default function Hero({
               {available ? 'Présenter mon projet' : 'Préparer mon projet'}
               <span aria-hidden="true">↗</span>
             </a>
-            <a className="hero-discover" href="#concept">
-              Découvrir la maison <span aria-hidden="true">↓</span>
+            <a className="hero-discover" href="#formats">
+              Comparer les deux formats <span aria-hidden="true">↓</span>
             </a>
           </div>
         </div>

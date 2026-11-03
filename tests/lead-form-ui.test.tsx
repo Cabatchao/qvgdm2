@@ -122,9 +122,11 @@ for (const scenario of [
 
 test('une erreur réseau préserve les informations et la même clé lors du réessai', async () => {
   const ids: unknown[] = [];
+  const bodies: unknown[] = [];
   mock.method(globalThis, 'fetch', async (_url: Parameters<typeof fetch>[0], init?: RequestInit) => {
     const payload = submittedBody(init);
     ids.push(payload.idempotencyKey);
+    bodies.push(payload);
     if (ids.length === 1) throw new TypeError('Réseau interrompu');
     return jsonResponse({ ok: true, submissionId: payload.idempotencyKey }, 201);
   });
@@ -132,10 +134,12 @@ test('une erreur réseau préserve les informations et la même clé lors du ré
   testing.fireEvent.submit(rendered.form);
   await testing.waitFor(() => assert.ok(rendered.queryByRole('alert')));
   assertInputPreserved(rendered.container);
-  testing.fireEvent.submit(rendered.form);
+  assert.ok(rendered.container.querySelector('#city')?.matches(':disabled'));
+  testing.fireEvent.click(rendered.getByRole('button', { name: 'Vérifier mon envoi' }));
   await testing.waitFor(() => assert.ok(rendered.queryByRole('status')));
   assert.equal(ids.length, 2);
   assert.equal(ids[0], ids[1]);
+  assert.deepEqual(bodies[0], bodies[1]);
 });
 
 test('la double soumission pendant le traitement ne crée qu’une requête', async () => {
@@ -170,3 +174,17 @@ test('les erreurs serveur sont reliées aux champs et la correction retire leur 
   assert.equal(city.getAttribute('aria-invalid'), 'false');
   assertInputPreserved(rendered.container);
 });
+
+for (const [status, code] of [[429, 'RATE_LIMITED'], [503, 'INTAKE_UNAVAILABLE']] as const) {
+  test(`un refus avant la transmission (${code}) garde le projet modifiable`, async () => {
+    mock.method(globalThis, 'fetch', async () => jsonResponse({ ok: false, code, message: 'Réessayez plus tard.' }, status));
+    const rendered = openForm();
+    testing.fireEvent.submit(rendered.form);
+    await testing.waitFor(() => assert.ok(rendered.queryByRole('alert')));
+    const city = rendered.container.querySelector('#city') as HTMLInputElement;
+    assert.equal(city.matches(':disabled'), false);
+    testing.fireEvent.change(city, { target: { value: 'Lille' } });
+    assert.equal(city.value, 'Lille');
+    assert.ok(rendered.getByRole('button', { name: 'Envoyer mon projet' }));
+  });
+}
