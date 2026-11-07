@@ -35,3 +35,6 @@ dist-ssr
 # Owner-private presentation media, staged separately for the approved build.
 public/video/zio-cuisine.mp4
 public/images/zio-*-v2*.webp
+
+# Isolated design preview build
+/out-design/
