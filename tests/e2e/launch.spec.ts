@@ -4,6 +4,7 @@ import AxeBuilder from '@axe-core/playwright';
 test('le parcours de lancement est lisible et ses destinations existent', async ({ page, isMobile }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
   await expect(page.getByRole('main')).toBeVisible();
@@ -15,9 +16,14 @@ test('le parcours de lancement est lisible et ses destinations existent', async 
     .filter((href) => href.length > 1 && !document.getElementById(decodeURIComponent(href.slice(1)))));
   expect(invalidFragments).toEqual([]);
 
+  const compare = page.getByRole('link', { name: 'Comparer les deux formats' });
+  await expect(compare).toBeInViewport();
+  await compare.click();
+  await expect(page).toHaveURL(/#formats$/);
+  await expect(page.locator('#formats-title')).toBeInViewport();
   await page.getByRole('link', { name: 'Préparer mon projet' }).click();
   await expect(page).toHaveURL(/#projet$/);
-  await expect(page.locator('#projet')).toBeVisible();
+  await expect(page.getByText('Ouverture prochaine des candidatures', { exact: true })).toBeInViewport();
   expect(errors).toEqual([]);
 });
 
@@ -31,7 +37,7 @@ test('la collecte fermée ne permet aucune saisie ni faux succès', async ({ pag
   await expect(section).toBeVisible();
   await expect(section.getByRole('textbox')).toHaveCount(0);
   await expect(section.locator('button[type="submit"]')).toHaveCount(0);
-  await expect(section).toContainText('Les candidatures en ligne ne sont pas encore ouvertes.');
+  await expect(section).toContainText('Le formulaire de cette page est en préparation.');
   await expect(section.getByRole('status')).toHaveCount(0);
   expect(leadRequests).toEqual([]);
 });
@@ -130,12 +136,14 @@ test('les photos se chargent sans décalage et les polices locales sont actives'
 
   const fonts = await page.evaluate(() => ({
     body: getComputedStyle(document.body).fontFamily.split(',')[0].replaceAll('"', '').trim(),
-    heading: getComputedStyle(document.querySelector('h1')!).fontFamily.split(',')[0].replaceAll('"', '').trim(),
+    heading: getComputedStyle(document.querySelector('.hero-title-line:first-child')!).fontFamily.split(',')[0].replaceAll('"', '').trim(),
+    cover: getComputedStyle(document.querySelector('.hero-title-line:last-child')!).fontFamily.split(',')[0].replaceAll('"', '').trim(),
     loaded: [...document.fonts].filter((face) => face.status === 'loaded').map((face) => face.family.replaceAll('"', '')),
     resources: performance.getEntriesByType('resource').map(({ name }) => name).filter((name) => /\.(woff2?|ttf|otf)(\?|$)/.test(name)),
   }));
   expect(fonts.body).toBe('Proxima Nova');
   expect(fonts.heading).toBe('Awesome Serif');
+  expect(fonts.cover).toBe('Proxima Nova');
   expect(fonts.loaded).toEqual(expect.arrayContaining(['Proxima Nova', 'Awesome Serif']));
   expect(fonts.resources.length).toBeGreaterThan(0);
   for (const resource of fonts.resources) {
@@ -220,4 +228,28 @@ test('l’API de la version fermée refuse la collecte avec une réponse explici
   expect(body.ok).toBe(false);
   expect(body.code).toBe('INTAKE_UNAVAILABLE');
   expect(body).not.toHaveProperty('submissionId');
+});
+
+test('la zone, les deux formats et la fermeture du formulaire sont explicites', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.hero-description')).toContainText('Nord (59)');
+  await expect(page.locator('#formats h3').first()).toHaveText('À emporter');
+  await expect(page.locator('#formats h3').nth(1)).toHaveText('Avec restaurant');
+  await expect(page.locator('#projet')).toContainText('Ouverture prochaine des candidatures');
+  await expect(page.locator('#projet a[href^="http"]')).toHaveCount(0);
+  await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
+});
+
+test('le film laisse la priorité à l’affiche sur un écran de téléphone', async ({ page }) => {
+  test.skip(process.env.PIZZA_ZIO_VISUAL_PACK !== '1', 'Media privately staged for the production-like build');
+  await page.setViewportSize({ width: 390, height: 844 });
+  const movies: string[] = [];
+  page.on('request', req => { if (req.url().includes('zio-cuisine.mp4')) movies.push(req.url()); });
+  await page.goto('/');
+  const button = page.getByRole('button', { name: 'Lire le film' });
+  await page.bringToFront();
+  await expect(button).toBeVisible();
+  expect(movies).toEqual([]);
+  await button.click();
+  await expect.poll(() => movies.length).toBeGreaterThan(0);
 });

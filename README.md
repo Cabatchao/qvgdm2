@@ -2,6 +2,10 @@
 
 Site Next.js dédié à la présentation de l’enseigne et à la candidature d’un futur exploitant. Le code provient de la branche `codex/create-landing-page-for-pizza-zio-franchise` du dépôt `Cabatchao/qvgdm2`. Cette version ne prouve pas son raccordement au site Vercel historique.
 
+## Recette de novembre
+
+La [recette du recrutement dans le Nord](docs/recette-lancement-nord.md) décrit le parcours actuel, les formats confirmés, le récepteur Google Sheets privé, les tests et les étapes nécessaires pour ouvrir les candidatures. Elle complète les audits et instantanés historiques d’octobre ci-dessous.
+
 ## État de lancement
 
 La collecte reste **fermée par défaut**. L’interface et l’API n’acceptent aucune candidature tant que les informations métier et légales ne sont pas validées **et** que les services de réception et de limitation ne sont pas configurés. Les pages sont `noindex` pendant cette préparation. Aucun traceur publicitaire n’est installé.

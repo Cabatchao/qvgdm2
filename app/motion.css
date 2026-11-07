@@ -1,76 +1,183 @@
-/* Progressive enhancement: content is visible before, during and without motion. */
-@keyframes zio-hero-arrival {
-  from { translate: 0 12px; }
-  to { translate: 0 0; }
+@keyframes zio-arrive {
+  0% {
+    opacity: 1;
+    translate: 0 28px;
+  }
+  to {
+    opacity: 1;
+    translate: 0;
+  }
 }
-
-@keyframes zio-page-arrival {
-  from { translate: 0 18px; }
-  to { translate: 0 0; }
+@keyframes zio-line-follow {
+  0% {
+    translate: 0 8px;
+  }
+  to {
+    translate: 0;
+  }
 }
-
-@keyframes zio-reading {
-  from { scale: 1 0; }
-  to { scale: 1 1; }
+@keyframes zio-lens-settle {
+  0% {
+    scale: 1.065;
+  }
+  to {
+    scale: 1;
+  }
 }
-
-/* A decorative progress line is omitted where no scroll timeline is available. */
-.reading-progress { visibility: hidden; transform-origin: 50% 0; }
-
+@keyframes zio-section-arrive {
+  0% {
+    opacity: 1;
+    translate: 0 24px;
+  }
+  to {
+    opacity: 1;
+    translate: 0;
+  }
+}
+@keyframes zio-image-window {
+  0% {
+    clip-path: inset(7% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+@keyframes zio-image-depth {
+  0% {
+    translate: 0 -3%;
+  }
+  to {
+    translate: 0 3%;
+  }
+}
 @media (prefers-reduced-motion: no-preference) {
   [data-hero-reveal] {
-    animation: zio-hero-arrival 640ms cubic-bezier(.2, .65, .3, 1) both;
+    animation: 0.9s cubic-bezier(0.16, 1, 0.3, 1) both zio-arrive;
   }
-  [data-hero-reveal="2"] { animation-delay: 70ms; }
-  [data-hero-reveal="3"] { animation-delay: 140ms; }
-
-  @supports (animation-timeline: view()) and (animation-range: entry 0% entry 85%) {
+  [data-hero-reveal='2'] {
+    animation-delay: 0.1s;
+  }
+  [data-hero-reveal='3'] {
+    animation-delay: 0.28s;
+  }
+  .hero-title-line:nth-child(2) {
+    animation: 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both zio-line-follow;
+  }
+  .hero-media img {
+    transform-origin: 55%;
+    animation: 2.8s cubic-bezier(0.2, 0.7, 0.3, 1) both zio-lens-settle;
+  }
+  .hero-bottom {
+    animation: 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.38s both zio-arrive;
+  }
+  @supports (animation-timeline: view()) and
+    (animation-range: entry 0% entry 85%) {
+    [data-reveal]:not([data-hero-reveal]) {
+      animation: 1s linear both zio-section-arrive;
+      animation-timeline: view();
+      animation-range: entry entry 85%;
+    }
+    .immersion-primary,
+    .immersion-secondary {
+      view-timeline-name: --zio-gallery;
+      view-timeline-axis: block;
+    }
+    .immersion-primary [data-photo],
+    .immersion-secondary [data-photo] {
+      animation: 1s linear both zio-image-window;
+      animation-timeline: --zio-gallery;
+      animation-range: entry entry 90%;
+    }
     @media (min-width: 48rem) {
-      [data-reveal]:not([data-hero-reveal]) {
-        animation: zio-page-arrival 1s linear both;
-        animation-timeline: view(block);
-        animation-range: entry 0% entry 85%;
+      .immersion-primary [data-photo] img,
+      .immersion-secondary [data-photo] img {
+        animation: 1s linear both zio-image-depth;
+        animation-timeline: --zio-gallery;
+        animation-range: cover;
+        scale: 1.08;
       }
     }
   }
-
-  @supports (animation-timeline: scroll(root block)) {
-    .reading-progress {
-      visibility: visible;
-      animation: zio-reading 1s linear both;
-      animation-timeline: scroll(root block);
-    }
-  }
 }
-
 @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
-  [data-photo] img { transition: scale 650ms cubic-bezier(.2, .65, .3, 1); }
-  [data-photo]:hover img { scale: 1.025; }
-}
-
-/* Keyboard focus never waits for an editorial transition. */
-[data-reveal]:focus-within,
-[data-hero-reveal]:focus-within { animation: none !important; opacity: 1; translate: none; }
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto !important; }
-  [data-reveal], [data-hero-reveal], [data-photo] img, .reading-progress {
-    animation: none !important;
-    transition: none !important;
-    translate: none !important;
+  .cta > span,
+  .header-cta > span,
+  .text-link > span,
+  .hero-discover > span {
+    transition: translate 0.22s cubic-bezier(0.2, 0.7, 0.3, 1);
   }
-  [data-reveal], [data-hero-reveal] { opacity: 1 !important; }
-  [data-photo] img { scale: 1 !important; }
-  .reading-progress { visibility: hidden; }
+  .cta:hover > span,
+  .header-cta:hover > span,
+  .text-link:hover > span {
+    translate: 4px -2px;
+  }
+  .hero-discover:hover > span {
+    translate: 0 4px;
+  }
+  [data-photo] img {
+    transition: scale 0.7s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  [data-photo]:hover img {
+    scale: 1.035;
+  }
+  .immersion-primary [data-photo]:hover img,
+  .immersion-secondary [data-photo]:hover img {
+    scale: 1.1;
+  }
+  .hero-media [data-photo]:hover img {
+    scale: 1;
+  }
+  .faq-list summary > span {
+    transition: transform 0.24s;
+  }
 }
-
-@media print {
-  [data-reveal], [data-hero-reveal], [data-photo] img {
+[data-reveal]:focus-within,
+[data-hero-reveal]:focus-within {
+  opacity: 1 !important;
+  animation: none !important;
+  translate: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  *,
+  :before,
+  :after {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
     animation: none !important;
-    transition: none !important;
+  }
+  [data-reveal],
+  [data-hero-reveal],
+  .hero-title-line,
+  .hero-bottom,
+  [data-photo],
+  [data-photo] img,
+  .hero-media img {
     opacity: 1 !important;
+    clip-path: none !important;
     translate: none !important;
     scale: 1 !important;
   }
-  .reading-progress { display: none; }
+}
+@media print {
+  *,
+  :before,
+  :after {
+    transition: none !important;
+    animation: none !important;
+  }
+  [data-reveal],
+  [data-hero-reveal],
+  .hero-title-line,
+  .hero-bottom,
+  [data-photo],
+  [data-photo] img,
+  .hero-media img {
+    opacity: 1 !important;
+    clip-path: none !important;
+    translate: none !important;
+    scale: 1 !important;
+  }
 }

@@ -136,6 +136,20 @@ test('security: IP lists and malformed trusted headers share the conservative bu
   assert.equal(commands[0][3], commands[1][3]);
 });
 
+test('security: IPv6 quota uses canonical /64 prefixes and maps IPv4 aliases to the same client', async () => {
+  async function bucket(ip: string) {
+    const network = upstream();
+    await handleLeadRequest(request(fixture, { 'x-vercel-forwarded-for': ip }), config, network.fetcher);
+    return redisCommands(network.calls)[0][3];
+  }
+  assert.equal(await bucket('2001:db8:0:7::1'), await bucket('2001:0DB8::7:1234:0:0:8'));
+  assert.notEqual(await bucket('2001:db8:0:7::1'), await bucket('2001:db8:0:8::1'));
+  assert.equal(await bucket('192.0.2.11'), await bucket('::FFFF:c000:020b'));
+  assert.equal(await bucket('192.0.2.11'), await bucket('::ffff:192.0.2.11'));
+  assert.notEqual(await bucket('192.0.2.11'), await bucket('192.0.2.12'));
+  assert.equal(await bucket('fe80::1%test'), await bucket('malformed'));
+});
+
 test('security: equivalent Unicode and email case cannot split the idempotence fingerprint', async () => {
   const network = upstream();
   await handleLeadRequest(request({ ...fixture, firstName: 'Élodie', email: 'CAMILLE@example.test' }), config, network.fetcher);
@@ -267,10 +281,46 @@ if (process.env.PIZZA_ZIO_REDIS_BIN) {
         for (let i = 0; i < 3; i++) assert.deepEqual(await evaluate([`ip:${i}`, keys[1], keys[2], `id:${i}`]), [1, 0]);
         assert.equal((await evaluate(['ip:4', keys[1], keys[2], 'id:4']))[0], 0);
       });
+      await t.test('blocked attempts do not consume the global quota for other candidates', async () => {
+        await redis('FLUSHDB');
+        for (let i = 0; i < 101; i++) await evaluate([keys[0], 'blocked-email', keys[2], 'attempt:' + i]);
+        assert.deepEqual(await evaluate(['fresh-ip', 'fresh-email', keys[2], 'fresh-id']), [1, 0]);
+        assert.equal(await redis('GET', keys[2]), '4');
+      });
       await t.test('global quota applies across independent addresses and emails', async () => {
         await redis('FLUSHDB');
         for (let i = 0; i < 100; i++) assert.deepEqual(await evaluate([`ip:${i}`, `email:${i}`, keys[2], `id:${i}`]), [1, 0]);
         assert.equal((await evaluate(['ip:101', 'email:101', keys[2], 'id:101']))[0], 0);
+      });
+      await t.test('IPv6 rotation on one prefix cannot block an unrelated candidate', async () => {
+        await redis('FLUSHDB');
+        async function send(ip: string, i: number) {
+          const submission = { ...fixture, idempotencyKey: randomUUID(), email: 'synthetic-' + i + '@example.test' };
+          const fetcher: typeof fetch = async (url, init) => {
+            if (String(url) === config.redisUrl) return Response.json({ result: await redis(...JSON.parse(String(init?.body))) });
+            return Response.json({ ok: true, persisted: true, submissionId: submission.idempotencyKey }, { status: 201 });
+          };
+          return (await handleLeadRequest(request(submission, { 'x-vercel-forwarded-for': ip }), config, fetcher)).status;
+        }
+        const statuses = [];
+        for (let i = 1; i <= 100; i++) statuses.push(await send('2001:db8:1:abcd::' + i.toString(16), i));
+        assert.equal(statuses.filter(status => status === 201).length, 5);
+        assert.equal(statuses.filter(status => status === 429).length, 95);
+        assert.equal(await send('2001:db8:2:ffff::1', 101), 201);
+      });
+      await t.test('identical replays stay bounded before reaching the receiver', async () => {
+        await redis('FLUSHDB');
+        let deliveries = 0;
+        const fetcher: typeof fetch = async (url, init) => {
+          if (String(url) === config.redisUrl) return Response.json({ result: await redis(...JSON.parse(String(init?.body))) });
+          deliveries++;
+          return Response.json({ ok: true, persisted: true, submissionId: id }, { status: 201 });
+        };
+        for (let i = 1; i <= 20; i++) {
+          const replay = request(fixture, { 'x-vercel-forwarded-for': '192.0.2.' + i });
+          assert.equal((await handleLeadRequest(replay, config, fetcher)).status, i <= 3 ? 201 : 429);
+        }
+        assert.equal(deliveries, 3);
       });
       await t.test('twenty concurrent attempts cannot exceed the five-request IP quota', async () => {
         await redis('FLUSHDB');

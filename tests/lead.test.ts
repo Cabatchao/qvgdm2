@@ -269,3 +269,17 @@ test('UUIDs are canonicalized and upstream error details never expose personal i
   assert.equal(body.includes(form.email), false);
   assert.equal(body.includes(config.redisToken), false);
 });
+
+test('a candidate can leave secondary qualification questions unanswered', () => {
+  const result = validateLead({ ...form, localStatus: '', hasRestaurantExperience: '', hasEntrepreneurExperience: '', operatorModel: '' });
+  assert.equal(result.ok, true);
+  if (result.ok) {
+    assert.deepEqual(qualifyLead(result.data).experience, { restaurant: null, entrepreneurship: null });
+    assert.equal(result.data.localStatus, null);
+  }
+});
+
+test('a shared receiver or Redis credential cannot open intake', () => {
+  assert.equal(getLeadConfig({ ...env, LEAD_WEBHOOK_TOKEN: env.LEAD_HASH_SECRET }, true), null);
+  assert.equal(getLeadConfig({ ...env, UPSTASH_REDIS_REST_TOKEN: env.LEAD_WEBHOOK_TOKEN }, true), null);
+});

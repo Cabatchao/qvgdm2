@@ -1,6 +1,6 @@
 import 'server-only';
 import { createHmac } from 'node:crypto';
-import { isIP } from 'node:net';
+import { isIP, SocketAddress } from 'node:net';
 import { PRIVACY_NOTICE_VERSION } from '../data/launchConfig';
 import type { LeadConfig } from './leadConfig';
 import { qualifyLead } from './scoreLead';
@@ -18,19 +18,23 @@ local previous = redis.call('GET', KEYS[4])
 if previous and previous ~= ARGV[7] then return {-1, 0} end
 local retry = 0
 for i = 1, 3 do
-  local count = redis.call('INCR', KEYS[i])
-  local ttl = tonumber(ARGV[i * 2 - 1])
-  local remaining = redis.call('TTL', KEYS[i])
-  if remaining < 0 then
-    redis.call('EXPIRE', KEYS[i], ttl)
-    remaining = ttl
-  end
-  if count > tonumber(ARGV[i * 2]) then
-    remaining = math.max(1, remaining)
-    if remaining > retry then retry = remaining end
+  local count = tonumber(redis.call('GET', KEYS[i]) or '0')
+  if count >= tonumber(ARGV[i * 2]) then
+    local remaining = redis.call('TTL', KEYS[i])
+    if remaining < 0 then
+      remaining = tonumber(ARGV[i * 2 - 1])
+      redis.call('EXPIRE', KEYS[i], remaining)
+    end
+    retry = math.max(retry, remaining, 1)
   end
 end
 if retry > 0 then return {0, retry} end
+-- Charge all three buckets only for admitted traffic. An exhausted sender
+-- must not consume capacity for unrelated candidates.
+for i = 1, 3 do
+  redis.call('INCR', KEYS[i])
+  if redis.call('TTL', KEYS[i]) < 0 then redis.call('EXPIRE', KEYS[i], ARGV[i * 2 - 1]) end
+end
 redis.call('SET', KEYS[4], ARGV[7], 'EX', ARGV[8])
 return {1, 0}
 `;
@@ -89,7 +93,20 @@ function hash(config: LeadConfig, purpose: string, input: string): string {
 function clientBucket(request: Request, config: LeadConfig): string {
   // Vercel overwrites this header at its edge. Never trust arbitrary proxy headers elsewhere.
   const ip = config.vercel ? request.headers.get('x-vercel-forwarded-for')?.trim() : undefined;
-  return ip && isIP(ip) ? ip : 'shared-untrusted-proxy';
+  if (!ip || ip.includes('%')) return 'shared-untrusted-proxy';
+  const family = isIP(ip);
+  if (family === 4) return ip;
+  if (family !== 6) return 'shared-untrusted-proxy';
+  const address = new SocketAddress({ address: ip, family: 'ipv6' }).address;
+  const mapped = address.slice('::ffff:'.length);
+  if (address.startsWith('::ffff:') && isIP(mapped) === 4) return mapped;
+
+  // Multiple devices and temporary addresses in one IPv6 /64 share a quota.
+  const [left, right] = address.split('::');
+  const leading = left ? left.split(':') : [];
+  const trailing = right ? right.split(':') : [];
+  const words = [...leading, ...Array(8 - leading.length - trailing.length).fill('0'), ...trailing];
+  return words.slice(0, 4).join(':') + '::/64';
 }
 
 export async function enforceLeadLimits(request: Request, lead: ValidatedLead, config: LeadConfig, fetcher: Fetcher): Promise<void> {
@@ -120,6 +137,11 @@ export async function enforceLeadLimits(request: Request, lead: ValidatedLead, c
 }
 
 async function deliverLead(lead: ValidatedLead, config: LeadConfig, fetcher: Fetcher): Promise<void> {
+  if (config.sheet) {
+    const { deliverToSheet } = await import('./sheetReceiver');
+    await deliverToSheet(lead, config.sheet);
+    return;
+  }
   const receivedAt = new Date().toISOString();
   const { idempotencyKey, rgpd, ...application } = lead;
   const delivered = await fetcher(config.webhookUrl, {

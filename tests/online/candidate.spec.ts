@@ -29,7 +29,7 @@ test('le parcours candidat fonctionne sans erreur JavaScript ni ressource requis
   await expect(page.locator('.header-cta')).toBeVisible();
   await page.getByRole('link', { name: 'Préparer mon projet' }).click();
   await expect(page).toHaveURL(/#projet$/);
-  await expect(page.locator('#projet')).toContainText('Les candidatures en ligne ne sont pas encore ouvertes.');
+  await expect(page.locator('#projet')).toContainText('Le formulaire de cette page est en préparation.');
   await page.getByRole('link', { name: 'Données personnelles', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Données personnelles', exact: true })).toBeVisible();
   await page.getByRole('link', { name: 'Retour à Pizza Zio' }).click();
@@ -118,7 +118,7 @@ test.describe('sans JavaScript', () => {
     await expect(page.locator('.faq-list details').first()).toHaveAttribute('open', '');
     await page.getByRole('link', { name: 'Préparer mon projet' }).click();
     const project = page.locator('#projet');
-    await expect(project).toContainText('Les candidatures en ligne ne sont pas encore ouvertes.');
+    await expect(project).toContainText('Le formulaire de cette page est en préparation.');
     await expect(project.locator('input, textarea, select, button[type="submit"]')).toHaveCount(0);
     await expect(project.getByRole('status')).toHaveCount(0);
   });
