@@ -7,16 +7,19 @@ export default function Network() {
       <div className="network-heading">
         <div>
           <p className="eyebrow">Nos restaurants dans le Nord</p>
-          <h2 id="network-title">{restaurants.length} adresses.<br /><em>Une histoire locale.</em></h2>
+          <h2 id="network-title">Une même maison.<br /><em>Huit adresses.</em></h2>
         </div>
-        <p>De Marcq-en-Barœul à Mérignies, retrouvez les établissements Pizza Zio autour de Lille.</p>
+        <p>De Marcq-en-Barœul à Mérignies, Pizza Zio fait partie de la vie du Nord. Retrouvez nos restaurants autour de Lille.</p>
       </div>
       <div className="network-grid">
         <figure className="network-map">
+          <div className="network-map-heading" aria-hidden="true">
+            <span>Autour de Lille</span><span className="network-map-count">{restaurants.length} adresses</span>
+          </div>
           <svg viewBox="0 0 600 720" role="group" aria-labelledby="map-title map-description">
             <title id="map-title">Les huit restaurants Pizza Zio dans le Nord</title>
             <desc id="map-description">Chaque repère numéroté mène à l’adresse correspondante dans la liste. Le nord est en haut.</desc>
-            <image href="/images/zio-network-map.svg" width="600" height="720" />
+            <image href="/images/zio-network-map.svg?v=20261107-dark" width="600" height="720" />
             <g aria-hidden="true" className="map-orientation">
               <path d="M550 76V36m-8 12 8-12 8 12" />
               <text x="550" y="25" textAnchor="middle">N</text>
@@ -40,8 +43,8 @@ export default function Network() {
             })}
           </svg>
           <figcaption>
-            Choisissez un numéro pour retrouver son adresse.
-            <span>Fond simplifié IGN / data.gouv.fr · <a href="https://www.data.gouv.fr/datasets/contours-administratifs" target="_blank" rel="noopener noreferrer">Sources cartographiques<span className="sr-only"> (nouvel onglet)</span></a> · <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener noreferrer">ODbL<span className="sr-only"> (nouvel onglet)</span></a></span>
+            <span className="map-caption-title"><span aria-hidden="true" className="map-caption-dot" />Un numéro, une adresse à découvrir.</span>
+            <span className="map-credits">Fond simplifié <a href="https://www.data.gouv.fr/datasets/contours-administratifs" target="_blank" rel="noopener noreferrer">IGN / data.gouv.fr<span className="sr-only"> (nouvel onglet)</span></a> · <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener noreferrer">ODbL<span className="sr-only"> (nouvel onglet)</span></a></span>
           </figcaption>
         </figure>
         <ol className="restaurant-list">
@@ -50,10 +53,10 @@ export default function Network() {
               <span className="restaurant-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
               <div>
                 <h3>{restaurant.city}</h3>
-                {restaurant.opened && <p className="restaurant-year">Depuis {restaurant.opened}</p>}
+                {restaurant.opened ? <p className="restaurant-year">Depuis {restaurant.opened}</p> : null}
                 <p>{restaurant.address}<br />{restaurant.postcode} {restaurant.city}</p>
                 <a href={restaurant.url} target="_blank" rel="noopener noreferrer">
-                  Voir le restaurant <span aria-hidden="true">↗</span>
+                  Voir le restaurant <svg className="restaurant-arrow" aria-hidden="true" viewBox="0 0 16 16"><path d="M3 13 13 3M3 3h10v10" /></svg>
                   <span className="sr-only"> {restaurant.city} (nouvel onglet)</span>
                 </a>
               </div>
@@ -61,7 +64,10 @@ export default function Network() {
           ))}
         </ol>
       </div>
-      <p className="network-note">Votre future implantation dans le Nord sera étudiée avec l’équipe Pizza Zio en fonction des zones disponibles.</p>
+      <div className="network-foot">
+        <p className="network-note">Votre future implantation dans le Nord sera étudiée avec l’équipe Pizza Zio en fonction des zones disponibles.</p>
+        <a className="text-link" href="https://pizza-zio.fr/histoire/" target="_blank" rel="noopener noreferrer">Découvrir notre histoire<span className="sr-only"> (nouvel onglet)</span></a>
+      </div>
     </section>
   );
 }

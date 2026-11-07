@@ -20,7 +20,9 @@ export const franchiseData = {
   recruitingArea: 'Nord (59)',
   // Adresses officielles pizza-zio.fr, coordonnées BAN / IGN vérifiées le 7 novembre 2026.
   // Mérignies utilise le point du restaurant publié dans le lien Google Maps officiel.
-  // Les années connues sont celles confirmées par le responsable du projet.
+  // Années vérifiées le 7 novembre 2026 : pizza-zio.fr/histoire/ (Marcq, Loos,
+  // Villeneuve et Mons), confirmation du responsable du projet (Capinghem).
+  // Voir docs/dates-ouverture-restaurants.md. Une année ambiguë reste null.
   restaurants: [
     {
       "id": "marcq",
@@ -59,7 +61,7 @@ export const franchiseData = {
     {
       "id": "saint-andre",
       "city": "Saint-André-lez-Lille",
-      "opened": 2002,
+      "opened": null,
       "address": "32 rue du Général Leclerc",
       "postcode": "59350",
       "url": "https://pizza-zio.fr/saint-andre-lez-lille/",
@@ -93,7 +95,7 @@ export const franchiseData = {
     {
       "id": "mons",
       "city": "Mons-en-Barœul",
-      "opened": null,
+      "opened": 2024,
       "address": "126 rue du Général de Gaulle",
       "postcode": "59370",
       "url": "https://pizza-zio.fr/mons-en-baroeul/",
@@ -127,7 +129,7 @@ export const franchiseData = {
     {
       "id": "loos",
       "city": "Loos",
-      "opened": null,
+      "opened": 1998,
       "address": "45 rue du Maréchal Foch",
       "postcode": "59120",
       "url": "https://pizza-zio.fr/loos/",
@@ -144,7 +146,7 @@ export const franchiseData = {
     {
       "id": "villeneuve",
       "city": "Villeneuve-d’Ascq",
-      "opened": null,
+      "opened": 2001,
       "address": "4 rue de la Station",
       "postcode": "59650",
       "url": "https://pizza-zio.fr/villeneuve-dascq/",
