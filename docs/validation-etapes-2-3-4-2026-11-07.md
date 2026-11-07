@@ -4,7 +4,7 @@
 
 ## Objectif et résultat attendu
 
-Un candidat dans le Nord présente son projet. Il doit recevoir une confirmation uniquement après l’enregistrement durable d’un dossier. Maxence et le directeur doivent ensuite pouvoir traiter ce dossier dans un tableau privé. Une notification ne doit contenir que sa référence et le lien privé, jamais les coordonnées, le budget ou le texte du candidat.
+Un candidat dans le Nord présente son projet. Il doit recevoir une confirmation uniquement après l’enregistrement durable d’un dossier. Maxence est le seul responsable humain autorisé à consulter et traiter les candidatures dans cette première phase. Aucun accès au directeur ou à un autre collaborateur ne doit être ajouté sans nouvelle demande explicite. Une notification ne doit contenir que sa référence et le lien privé, jamais les coordonnées, le budget ou le texte du candidat.
 
 La première version conserve le suivi humain. La collecte publique reste fermée tant que les informations légales, la réception réelle et l’accès des responsables ne sont pas validés. Aucun numéro, contact public ou renseignement juridique n’a été inventé pour contourner ce blocage.
 
@@ -12,7 +12,7 @@ Cas de référence : envoyer une candidature fictive, perdre la réponse, puis r
 
 ## Étape 2 — réception et notification
 
-- Le tableau existant a été retrouvé par le connecteur Google Drive. Sa première ligne correspond exactement aux 25 colonnes attendues par l’adaptateur. Le partage général est restreint et la lecture des permissions ne montre que le propriétaire.
+- Le tableau existant a été retrouvé par le connecteur Google Drive. Sa première ligne correspond exactement aux 25 colonnes attendues par l’adaptateur. Après la demande de liaison à l’adresse de notification, les permissions ont été relues : uniquement les deux comptes de Maxence, l’un propriétaire et l’autre éditeur. Aucun partage public, de domaine ou avec le directeur. Les adresses restent hors du dépôt public.
 - Le destinataire privé des alertes a été confirmé par l’utilisateur. Son adresse n’est pas inscrite dans ce dépôt public, dans le site ou dans ce compte rendu.
 - Défaut reproduit puis corrigé : l’obtention du jeton OAuth Google échappait au délai maximal. Le transport OAuth et Sheets partage maintenant un budget de 12 secondes, avec 8 secondes par requête, sans redirection ni réessai implicite. Les tests du vrai SDK avec HTTP simulé passent.
 - Une notification liée au classeur est préparée dans `integrations/google-apps-script`. Ses 11 tests locaux passent, y compris les deux cas ajoutés après la contre-revue de sécurité : email accepté puis accusé perdu, et échec du journal après envoi. Ces cas restent à vérifier manuellement et ne sont pas renvoyés automatiquement. Le module nécessite une installation et une autorisation Google explicites avant d’être actif. Il ne constitue pas le raccordement du serveur au tableau.

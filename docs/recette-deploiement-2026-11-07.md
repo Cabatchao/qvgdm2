@@ -4,7 +4,7 @@ Vérification du 7 novembre 2026. Cette note distingue la configuration prépar�
 
 ## Objectif vérifiable
 
-Maxence et le directeur doivent pouvoir tester la réception des candidatures sur un serveur HTTPS, sans rendre la collecte accessible au public. Un visiteur anonyme doit rencontrer la protection d'accès ; un testeur autorisé doit pouvoir ouvrir la recette. La première version couvre le site existant et son circuit de réception, sans nouveau design, domaine public ni service payant provisionné.
+Maxence doit pouvoir tester la réception des candidatures sur un serveur HTTPS, sans rendre la collecte accessible au public. Il reste le seul responsable humain ayant accès aux candidatures pour cette première phase. Un visiteur anonyme doit rencontrer la protection d'accès ; un testeur autorisé doit pouvoir ouvrir la recette. La première version couvre le site existant et son circuit de réception, sans nouveau design, domaine public ni service payant provisionné.
 
 Avant toute ouverture, le test convenu est : une candidature fictive génère un seul dossier privé et un reçu cohérent ; la même tentative rejouée reste unique ; un incident ne produit jamais un faux succès. La validation de cet objectif exige aussi le tableau et la notification réellement raccordés. Une compilation ou un déploiement seuls ne suffisent pas.
 
