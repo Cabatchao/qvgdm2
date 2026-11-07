@@ -61,7 +61,7 @@ export const franchiseData = {
     {
       "id": "saint-andre",
       "city": "Saint-André-lez-Lille",
-      "opened": null,
+      "opened": 2004,
       "address": "32 rue du Général Leclerc",
       "postcode": "59350",
       "url": "https://pizza-zio.fr/saint-andre-lez-lille/",

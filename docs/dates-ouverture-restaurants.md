@@ -6,7 +6,7 @@ Vérification le 7 novembre 2026. Cette note distingue une ouverture au public d
 | --- | --- | --- |
 | Marcq-en-Barœul | 1991 | Confirmation du responsable du projet, corroborée par l’historique officiel. |
 | Capinghem | 2025 | Confirmation directe du responsable du projet le 7 novembre 2026. L’immatriculation n’est pas utilisée comme preuve d’ouverture. |
-| Saint-André-lez-Lille | Aucune pour le moment | Le responsable indique 2002, mais l’historique officiel indique 2004. Date à confirmer par l’équipe Pizza Zio ; ne pas trancher silencieusement. |
+| Saint-André-lez-Lille | 2004 | Historique officiel, puis confirmation explicite du responsable du projet le 7 novembre 2026. La divergence avec l’indication initiale 2002 est résolue. |
 | Lesquin | Aucune | L’historique associe ce restaurant au développement de la franchise, lancé en 2018, sans dater explicitement son ouverture. Date à confirmer par l’équipe Pizza Zio. |
 | Mons-en-Barœul | 2024 | L’historique officiel décrit expressément l’ouverture de ce restaurant en 2024. |
 | Mérignies | Aucune | Même ambiguïté sur le jalon 2018 que Lesquin. Date à confirmer par l’équipe Pizza Zio. |
