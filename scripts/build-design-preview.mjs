@@ -1,0 +1,10 @@
+import {cp,mkdir,rm} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const out=path.join(root,'out-design');
+await rm(out,{recursive:true,force:true});
+await mkdir(out,{recursive:true});
+await cp(path.join(root,'design-preview'),out,{recursive:true});
+for(const name of ['images','fonts']) await cp(path.join(root,'public',name),path.join(out,name),{recursive:true});
+console.log('Anatomy prototype built: '+out);
