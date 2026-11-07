@@ -1,3 +1,5 @@
+import { franchiseData } from '@/data/franchiseData';
+
 export default function FAQ({ available = false }: { available?: boolean }) {
   return (
     <section
@@ -37,11 +39,17 @@ export default function FAQ({ available = false }: { available?: boolean }) {
               <span aria-hidden="true">+</span>
             </summary>
             <p>
-              Les conditions financières actuelles sont à confirmer par l’équipe
-              Pizza Zio. Indiquez votre apport disponible et, si vous le
-              connaissez, votre budget global. Ces deux montants sont distincts
-              : l’apport correspond à vos ressources personnelles mobilisables.
+              Le droit d’entrée est de {franchiseData.entryFee.toLocaleString('fr-FR')} € {franchiseData.entryFeeTax}.
+              La redevance représente {franchiseData.royaltyPercent} % du chiffre d’affaires mensuel {franchiseData.royaltyBase}.
+              L’apport personnel et l’investissement total sont à confirmer par l’équipe Pizza Zio
+              selon votre format et votre local.
             </p>
+          </details>
+          <details>
+            <summary>Quel accompagnement et quelle durée de contrat ?<span aria-hidden="true">+</span></summary>
+            <p>Le contrat de franchise est prévu pour {franchiseData.contractYears} ans.
+              Vous bénéficiez de prix négociés auprès de fournisseurs centralisés,
+              d’une formation complète et d’un accompagnement au lancement.</p>
           </details>
           <details>
             <summary>

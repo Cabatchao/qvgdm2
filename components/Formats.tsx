@@ -74,12 +74,12 @@ export default function Formats({
           Pizza Zio vérifiera avec vous si la zone est disponible.
         </p>
         <p>
-          L’apport, l’investissement, le droit d’entrée
-          et les redevances sont à confirmer par l’équipe Pizza Zio. Aucun
+          L’apport personnel et l’investissement total
+          sont à confirmer par l’équipe Pizza Zio. Aucun
           résultat financier n’est garanti.
         </p>
-        <a className="text-link" href="#questions">
-          Les questions à se poser <span aria-hidden="true">↗</span>
+        <a className="text-link" href="#franchise">
+          Les conditions de franchise <span aria-hidden="true">↗</span>
         </a>
       </aside>
     </section>

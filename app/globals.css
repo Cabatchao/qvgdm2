@@ -1,6 +1,69 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.network-section { border-top: 1px solid var(--border); }
+.network-heading {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: end;
+  gap: 40px;
+  margin-bottom: 48px;
+}
+.network-heading > p { max-width: 400px; color: var(--muted); }
+.network-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 58px; align-items: start; }
+.network-map { position: sticky; top: 24px; min-width: 0; border: 1px solid var(--border); background: #f3f0e7; }
+.network-map svg { display: block; width: 100%; height: auto; }
+.network-map figcaption { display: block; padding: 18px 20px; font-size: .86rem; border-top: 1px solid var(--border); color: var(--muted); }
+.network-map figcaption span { display: block; margin-top: 6px; font-size: .7rem; }
+.network-map figcaption .sr-only { display: inline; }
+.map-orientation { fill: #5d6257; font-size: 16px; font-weight: 600; letter-spacing: .1em; }
+.map-orientation path { stroke: #5d6257; stroke-width: 2; fill: none; }
+.pin-hit { fill: transparent; }
+.pin-dot { fill: #46543b; stroke: #fffdf8; stroke-width: 3; }
+.pin-number { fill: #fffdf8; font-size: 19px; font-weight: 600; pointer-events: none; }
+.pin-label { fill: #25321f; font-size: 18px; font-weight: 600; paint-order: stroke; stroke: #f3f0e7; stroke-width: 5px; stroke-linejoin: round; pointer-events: none; }
+.network-pin:hover .pin-dot, .network-pin:focus-visible .pin-dot { fill: #943724; stroke-width: 5; }
+.network-pin:focus-visible { outline: none; }
+.network-pin:focus-visible .pin-hit { fill: #eca158; }
+.restaurant-list { margin: 0; padding: 0; list-style: none; }
+.restaurant-list li { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 14px; border-top: 1px solid var(--border); padding: 20px 0; scroll-margin-top: 32px; }
+.restaurant-list li:target { background: #e5e9da; box-shadow: 0 0 0 12px #e5e9da; border-color: transparent; }
+.restaurant-number { color: var(--olive); padding-top: 4px; font-size: .8rem; font-weight: 600; }
+.restaurant-list h3 { font-size: 1.2rem; }
+.restaurant-list p { margin-top: 6px; font-size: .86rem; color: var(--muted); }
+.restaurant-list p.restaurant-year { color: var(--olive); font-weight: 600; }
+.restaurant-list a { display: inline-flex; align-items: center; gap: 12px; min-height: 36px; font-size: .83rem; text-underline-offset: 4px; }
+.network-note { margin-top: 28px; color: var(--muted); font-size: .86rem; max-width: 660px; }
+.franchise-section { background: #35452f; color: var(--paper); }
+.franchise-section .eyebrow { color: #d6dfc9; }
+.franchise-section h2 { max-width: 780px; }
+.franchise-numbers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; margin: 48px 0 0; }
+.franchise-numbers > div { border-top: 1px solid #718066; padding-top: 22px; }
+.franchise-numbers dt { font-size: .86rem; color: #d6dfc9; }
+.franchise-numbers dd { margin: 14px 0 0; font-family: Awesome Serif, Georgia, serif; font-size: clamp(2.5rem, 4.4vw, 4.4rem); line-height: 1.05; }
+.franchise-numbers dd span { display: block; margin-top: 14px; font: .85rem/1.5 Proxima Nova, Arial, sans-serif; color: #e3e8d9; }
+.franchise-benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; margin-top: 58px; padding-top: 35px; border-top: 1px solid #718066; }
+.franchise-benefits h3 { font-size: 1.16rem; }
+.franchise-benefits p { color: #e3e8d9; font-size: .95rem; margin-top: 14px; }
+.franchise-note { margin-top: 36px; max-width: 710px; color: #d6dfc9; font-size: .85rem; }
+.franchise-section .text-link { margin-top: 22px; color: var(--paper); }
+@media (max-width: 900px) {
+  .network-grid { gap: 30px; grid-template-columns: minmax(0, 1fr) minmax(0, .85fr); }
+}
+@media (max-width: 700px) {
+  .network-heading { grid-template-columns: 1fr; gap: 22px; margin-bottom: 30px; }
+  .network-grid { grid-template-columns: 1fr; }
+  .network-map { position: static; }
+  .network-map figcaption { padding: 15px; }
+  .restaurant-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 22px; }
+  .restaurant-list li { grid-template-columns: 1fr; gap: 6px; }
+  .restaurant-list h3 { font-size: 1.05rem; overflow-wrap: anywhere; }
+  .franchise-numbers { gap: 25px; grid-template-columns: 1fr; margin-top: 34px; }
+  .franchise-numbers > div { display: grid; grid-template-columns: 1fr 1.1fr; gap: 14px; align-items: center; }
+  .franchise-numbers dd { margin-top: 0; font-size: 2.6rem; }
+  .franchise-benefits { grid-template-columns: 1fr; gap: 24px; margin-top: 35px; }
+}
 @font-face {
   font-family: Awesome Serif;
   src: url(/fonts/AwesomeSerif-Light.woff2) format('woff2');
