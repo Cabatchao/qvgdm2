@@ -61,12 +61,19 @@ export async function recordInSheet(lead: ValidatedLead, tabId: number, request:
   if (matches.length !== 1 || matches[0][1] !== digest) throw new Error('Persistence not confirmed');
 }
 
-export async function deliverToSheet(lead: ValidatedLead, config: SheetDestination) {
+export async function deliverToSheet(lead: ValidatedLead, config: SheetDestination, fetcher?: typeof fetch) {
+  // The SDK fetches an OAuth token before making a Sheets request. Apply the
+  // same overall deadline to that exchange, the write and any receipt reread.
+  const signal = AbortSignal.timeout(12_000);
   const auth = new JWT({
     email: config.email, key: config.privateKey,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    transporterOptions: {
+      signal, timeout: 8_000, redirect: 'error', maxRedirects: 0,
+      retry: false, retryConfig: { retry: 0, noResponseRetries: 0 },
+      ...(fetcher ? { fetchImplementation: fetcher } : {}),
+    },
   });
-  const signal = AbortSignal.timeout(12_000);
   await recordInSheet(lead, config.tabId, async (operation, body) => {
     const result = await auth.request({
       url: 'https://sheets.googleapis.com/v4/spreadsheets/' + config.spreadsheetId + operation,

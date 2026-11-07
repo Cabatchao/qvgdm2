@@ -68,7 +68,7 @@ test('l’accessibilité automatique et le mouvement réduit restent utilisables
 });
 
 test('les pages restent lisibles à 320 px et en grand écran', async ({ page }) => {
-  for (const width of [320, 390, 621, 700, 768, 1440]) {
+  for (const width of [320, 390, 621, 700, 768, 801, 820, 1100, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
     const dimensions = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, content: document.documentElement.scrollWidth }));

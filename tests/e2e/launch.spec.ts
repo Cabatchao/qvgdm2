@@ -56,7 +56,7 @@ test('les pages légales sont accessibles et ramènent au site', async ({ page }
 });
 
 test('aucun débordement horizontal sur mobile, tablette et ordinateur', async ({ page }) => {
-  for (const width of [320, 390, 621, 700, 768, 1440]) {
+  for (const width of [320, 390, 621, 700, 768, 801, 820, 1100, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
     const dimensions = await page.evaluate(() => ({

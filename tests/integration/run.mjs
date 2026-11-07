@@ -2,6 +2,7 @@
  * Local production-like receipt test, isolated from the production application.
  * REDIS_SERVER_PATH and REDIS_CLI_PATH point to locally installed Redis binaries.
  * Optional PLAYWRIGHT_EXECUTABLE_PATH selects an already available Chromium.
+ * --http runs the real HTTP checks with Node only, without starting a browser.
  */
 import { mkdtemp, readFile, writeFile, cp, rm } from 'node:fs/promises';
 import { constants } from 'node:fs';
@@ -12,6 +13,9 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const repo = resolve(fileURLToPath(new URL('../../', import.meta.url)));
+const suppliedArgs = process.argv.slice(2);
+if (suppliedArgs.some(argument => argument !== '--http') || suppliedArgs.length > 1) throw new Error('Only the optional --http argument is accepted.');
+const httpOnly = suppliedArgs.includes('--http');
 const redisServer = process.env.REDIS_SERVER_PATH;
 const redisCli = process.env.REDIS_CLI_PATH;
 if (!redisServer || !redisCli) throw new Error('Set REDIS_SERVER_PATH and REDIS_CLI_PATH to local Redis binaries. No services are provisioned by this script.');
@@ -81,8 +85,11 @@ try {
   await waitFor('http://127.0.0.1:3221/health');
   start(process.execPath, [join(app, 'node_modules/next/dist/bin/next'), 'start', '--hostname', '127.0.0.1', '--port', '3220'], { cwd: app });
   await waitFor(settings.origin);
-  await finish(start(process.execPath, [join(repo, 'node_modules/@playwright/test/cli.js'), 'test', '--config', join(repo, 'tests/integration/playwright.config.mjs')], { cwd: repo }));
-  process.stdout.write('Real HTTP / Redis / SQLite integration checks passed. No external recipient contacted.\n');
+  const testArguments = httpOnly
+    ? ['--test', join(repo, 'tests/integration/http-flow.test.mjs')]
+    : [join(repo, 'node_modules/@playwright/test/cli.js'), 'test', '--config', join(repo, 'tests/integration/playwright.config.mjs')];
+  await finish(start(process.execPath, testArguments, { cwd: repo }));
+  process.stdout.write(`Real HTTP / Redis / SQLite integration checks passed (${httpOnly ? 'Node HTTP client; no browser' : 'browser'}). No external recipient contacted.\n`);
 } finally {
   for (const child of [...children].reverse()) if (child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');
   await new Promise(resolveDelay => setTimeout(resolveDelay, 500));
