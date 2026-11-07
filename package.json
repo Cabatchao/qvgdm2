@@ -17,7 +17,8 @@
     "test:integration": "node tests/integration/run.mjs",
     "check": "npm run lint && npm run typecheck && npm test && npm run build",
     "test:server": "node --conditions=react-server --import tsx --test tests/*.test.ts",
-    "test:ui": "node --import tsx --test tests/*.test.tsx"
+    "test:ui": "node --import tsx --test tests/*.test.tsx",
+    "build:design": "node scripts/build-design-preview.mjs"
   },
   "dependencies": {
     "google-auth-library": "11.3.2",
