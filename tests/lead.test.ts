@@ -60,6 +60,54 @@ test('validation accepts unknown finances and optional phone', () => {
   assert.equal('score' in qualified, false);
 });
 
+test('a project with no known opening date preserves À définir through delivery and human qualification', async () => {
+  const network = upstream();
+  const result = await handleLeadRequest(request({ ...form, openingTimeline: 'À définir' }), config, network.fetcher);
+  assert.equal(result.status, 201);
+  assert.deepEqual(await result.json(), { ok: true, submissionId: id });
+  assert.equal(network.calls.length, 2);
+  const delivered = JSON.parse(String(network.calls[1].init.body));
+  assert.equal(delivered.application.openingTimeline, 'À définir');
+  assert.equal(delivered.qualification.openingTimeline, 'À définir');
+  assert.equal(delivered.qualification.requiresHumanReview, true);
+});
+
+test('an absent, malformed or unlisted timeline still fails before any external request', async () => {
+  for (const openingTimeline of ['', undefined, null, 12, [], 'À confirmer', 'immédiatement']) {
+    const network = upstream();
+    const result = await handleLeadRequest(request({ ...form, openingTimeline }), config, network.fetcher);
+    assert.equal(result.status, 422);
+    assert.ok((await result.json()).fieldErrors.openingTimeline);
+    assert.equal(network.calls.length, 0);
+  }
+});
+
+for (const format of ['Livraison uniquement', 'Livraison + restaurant']) {
+  test(`retired format ${format} is rejected before any external request`, async () => {
+    const network = upstream();
+    const result = await handleLeadRequest(request({ ...form, format }), config, network.fetcher);
+    assert.equal(result.status, 422);
+    const body = await result.json();
+    assert.equal(body.ok, false);
+    assert.equal(body.code, 'VALIDATION_FAILED');
+    assert.ok(body.fieldErrors.format);
+    assert.equal('submissionId' in body, false);
+    assert.equal(network.calls.length, 0);
+  });
+}
+
+test('current restaurant formats and an undecided project preserve their choice through delivery', async () => {
+  for (const format of ['À emporter', 'Avec restaurant', 'Je ne sais pas encore', '', undefined]) {
+    const network = upstream();
+    const result = await handleLeadRequest(request({ ...form, format }), config, network.fetcher);
+    assert.equal(result.status, 201);
+    assert.deepEqual(await result.json(), { ok: true, submissionId: id });
+    assert.equal(network.calls.length, 2);
+    const delivered = JSON.parse(String(network.calls[1].init.body));
+    assert.equal(delivered.application.format, format || 'Je ne sais pas encore');
+  }
+});
+
 test('validation rejects malformed field types, unknown enum and unacknowledged notice', () => {
   const result = validateLead({ ...form, email: 'not-email', personalContribution: '30k', operatorModel: 'Investor', rgpd: 'true', firstName: [] });
   assert.equal(result.ok, false);
@@ -268,4 +316,18 @@ test('UUIDs are canonicalized and upstream error details never expose personal i
   const body = await result.text();
   assert.equal(body.includes(form.email), false);
   assert.equal(body.includes(config.redisToken), false);
+});
+
+test('a candidate can leave secondary qualification questions unanswered', () => {
+  const result = validateLead({ ...form, localStatus: '', hasRestaurantExperience: '', hasEntrepreneurExperience: '', operatorModel: '' });
+  assert.equal(result.ok, true);
+  if (result.ok) {
+    assert.deepEqual(qualifyLead(result.data).experience, { restaurant: null, entrepreneurship: null });
+    assert.equal(result.data.localStatus, null);
+  }
+});
+
+test('a shared receiver or Redis credential cannot open intake', () => {
+  assert.equal(getLeadConfig({ ...env, LEAD_WEBHOOK_TOKEN: env.LEAD_HASH_SECRET }, true), null);
+  assert.equal(getLeadConfig({ ...env, UPSTASH_REDIS_REST_TOKEN: env.LEAD_WEBHOOK_TOKEN }, true), null);
 });

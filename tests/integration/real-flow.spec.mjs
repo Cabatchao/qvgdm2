@@ -24,13 +24,14 @@ function records() {
 async function fillForm(page) {
   await page.goto('/#projet');
   await expect(page.locator('input[name="firstName"]')).toBeEnabled();
+  await page.locator('.form-optional summary').click();
   for (const name of ['firstName', 'lastName', 'email', 'city', 'personalContribution', 'estimatedBudget', 'motivation']) await page.locator(`[name="${name}"]`).fill(sample[name]);
   for (const name of ['localStatus', 'format', 'hasRestaurantExperience', 'hasEntrepreneurExperience', 'openingTimeline', 'operatorModel']) await page.locator(`select[name="${name}"]`).selectOption(sample[name]);
   await page.locator('input[name="rgpd"]').check();
 }
-async function submit(page) {
+async function submit(page, buttonName = 'Envoyer mon projet') {
   const requestPromise = page.waitForRequest(request => request.url().endsWith('/api/lead') && request.method() === 'POST');
-  await page.getByRole('button', { name: 'Envoyer mon projet' }).click();
+  await page.getByRole('button', { name: buttonName }).click();
   return (await requestPromise).postDataJSON();
 }
 async function postLead(request, payload) {
@@ -59,7 +60,8 @@ test('perte de réponse après COMMIT puis réessai même UUID : un seul dossier
   await expect(page.locator('#projet').getByRole('alert')).toContainText('réception');
   expect(records()).toHaveLength(1);
   await expect(page.locator('[name="email"]')).toHaveValue(sample.email);
-  const retry = await submit(page);
+  await expect(page.locator('#motivation')).toBeDisabled();
+  const retry = await submit(page, 'Vérifier mon envoi');
   expect(retry.idempotencyKey).toBe(first.idempotencyKey);
   await expect(page.getByRole('status')).toContainText(first.idempotencyKey);
   expect(records()).toHaveLength(1);
@@ -123,4 +125,58 @@ test('deux POST simultanés avec le même UUID produisent un seul dossier', asyn
   expect(receipts.every(receipt => receipt.submissionId === payload.idempotencyKey)).toBe(true);
   expect(records()).toHaveLength(1);
   expect((await control(request, {})).deliveries).toBe(2);
+});
+
+test('projet minimal à Lille : budget facultatif caché, erreur accessible et correction', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await page.goto('/#projet');
+  const optional = page.locator('.form-optional');
+  await expect(optional).not.toHaveAttribute('open');
+  await expect(page.locator('#personalContribution')).toBeHidden();
+  for (const [name, value] of Object.entries({
+    firstName: 'Camille', lastName: 'Exemple', email: 'lille@example.test', city: 'Lille',
+    motivation: 'Je souhaite ouvrir une pizzeria à emporter à Lille.',
+  })) await page.locator(`#${name}`).fill(value);
+  await page.locator('#format').selectOption('À emporter');
+  await page.locator('#openingTimeline').selectOption('6-12 mois');
+  await page.locator('#rgpd').check();
+  const summary = optional.locator('summary');
+  await summary.focus();
+  await page.keyboard.press('Enter');
+  await page.locator('#personalContribution').fill('30k');
+  await summary.focus();
+  await page.keyboard.press('Space');
+  await expect(page.locator('#personalContribution')).toBeHidden();
+  await submit(page);
+  const alert = page.locator('#projet [role="alert"]');
+  await expect(alert).toBeFocused();
+  await expect(optional).toHaveAttribute('open', '');
+  await alert.getByRole('link').focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#personalContribution')).toBeFocused();
+  await expect(page.locator('#personalContribution')).toHaveValue('30k');
+  await page.locator('#personalContribution').fill('');
+  await summary.click();
+  const sent = await submit(page);
+  await expect(page.getByRole('status')).toContainText(sent.idempotencyKey);
+  const saved = records();
+  expect(saved).toHaveLength(1);
+  expect(saved[0].payload.application).toMatchObject({ city: 'Lille', format: 'À emporter', personalContribution: null });
+});
+
+test('consulter les informations légales depuis le pied de page conserve le dossier en cours', async ({ page, context }) => {
+  await fillForm(page);
+  for (const title of ['Données personnelles', 'Mentions légales']) {
+    const link = page.getByRole('contentinfo').getByRole('link', { name: `${title} (nouvel onglet)` });
+    await link.focus();
+    const popup = context.waitForEvent('page');
+    await page.keyboard.press('Enter');
+    const legalPage = await popup;
+    await expect(legalPage.getByRole('heading', { name: title, exact: true })).toBeVisible();
+    expect(await legalPage.evaluate(() => window.opener === null)).toBe(true);
+    await legalPage.close();
+    await expect(page.locator('#city')).toHaveValue(sample.city);
+    await expect(page.locator('#rgpd')).toBeChecked();
+  }
+  expect(records()).toHaveLength(0);
 });

@@ -41,7 +41,7 @@ test('les ressources navigateur ne divulguent pas de configuration serveur ni de
     expect(asset.status()).toBe(200);
     const body = await asset.text();
     // Detect accidental imports of server configuration without printing any matched contents.
-    const hasServerConfig = /LEAD_WEBHOOK_TOKEN|UPSTASH_REDIS_REST_TOKEN|LEAD_HASH_SECRET|RATE_LIMIT_SCRIPT/.test(body);
+    const hasServerConfig = /LEAD_WEBHOOK_TOKEN|UPSTASH_REDIS_REST_TOKEN|LEAD_HASH_SECRET|LEAD_SHEET_PRIVATE_KEY|LEAD_SHEET_CLIENT_EMAIL|LEAD_SHEET_ID|RATE_LIMIT_SCRIPT/.test(body);
     expect(hasServerConfig, `configuration serveur dans ${new URL(source).pathname}`).toBe(false);
     expect(body).not.toMatch(/sourceMappingURL=.*\.map(?:\s|$)/);
   }

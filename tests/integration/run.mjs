@@ -2,6 +2,7 @@
  * Local production-like receipt test, isolated from the production application.
  * REDIS_SERVER_PATH and REDIS_CLI_PATH point to locally installed Redis binaries.
  * Optional PLAYWRIGHT_EXECUTABLE_PATH selects an already available Chromium.
+ * --http runs the real HTTP checks with Node only, without starting a browser.
  */
 import { mkdtemp, readFile, writeFile, cp, rm } from 'node:fs/promises';
 import { constants } from 'node:fs';
@@ -12,6 +13,9 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const repo = resolve(fileURLToPath(new URL('../../', import.meta.url)));
+const suppliedArgs = process.argv.slice(2);
+if (suppliedArgs.some(argument => argument !== '--http') || suppliedArgs.length > 1) throw new Error('Only the optional --http argument is accepted.');
+const httpOnly = suppliedArgs.includes('--http');
 const redisServer = process.env.REDIS_SERVER_PATH;
 const redisCli = process.env.REDIS_CLI_PATH;
 if (!redisServer || !redisCli) throw new Error('Set REDIS_SERVER_PATH and REDIS_CLI_PATH to local Redis binaries. No services are provisioned by this script.');
@@ -54,9 +58,9 @@ try {
   });
   await writeFile(settingsPath, JSON.stringify(settings), { mode: 0o600 });
   const home = await readFile(join(app, 'app/page.tsx'), 'utf8');
-  const closedForm = '<LeadForm available={isLeadIntakeReady()} />';
+  const closedForm = 'const available = isLeadIntakeReady();';
   if (!home.includes(closedForm)) throw new Error('The production page changed: review the isolated test injection.');
-  await writeFile(join(app, 'app/page.tsx'), home.replace(closedForm, '<LeadForm available={true} />'));
+  await writeFile(join(app, 'app/page.tsx'), home.replace(closedForm, 'const available = true;'));
   const fixtureConfig = { origin: settings.origin, webhookUrl: 'http://127.0.0.1:3221/lead', redisUrl: 'http://127.0.0.1:3221/redis', webhookToken: settings.webhookToken, redisToken: settings.redisToken, hashSecret: settings.hashSecret, vercel: false };
   await writeFile(join(app, 'app/api/lead/route.ts'), `// Generated in a temporary directory only; never deployed or imported by production.\nimport { handleLeadRequest } from '../../../lib/leadService';\nexport const runtime='nodejs';\nexport const dynamic='force-dynamic';\nexport async function POST(request: Request) { return handleLeadRequest(request, ${JSON.stringify(fixtureConfig)}); }\n`);
   const nextConfig = await readFile(join(app, 'next.config.mjs'), 'utf8');
@@ -81,8 +85,11 @@ try {
   await waitFor('http://127.0.0.1:3221/health');
   start(process.execPath, [join(app, 'node_modules/next/dist/bin/next'), 'start', '--hostname', '127.0.0.1', '--port', '3220'], { cwd: app });
   await waitFor(settings.origin);
-  await finish(start(process.execPath, [join(repo, 'node_modules/@playwright/test/cli.js'), 'test', '--config', join(repo, 'tests/integration/playwright.config.mjs')], { cwd: repo }));
-  process.stdout.write('Real HTTP / Redis / SQLite integration checks passed. No external recipient contacted.\n');
+  const testArguments = httpOnly
+    ? ['--test', join(repo, 'tests/integration/http-flow.test.mjs')]
+    : [join(repo, 'node_modules/@playwright/test/cli.js'), 'test', '--config', join(repo, 'tests/integration/playwright.config.mjs')];
+  await finish(start(process.execPath, testArguments, { cwd: repo }));
+  process.stdout.write(`Real HTTP / Redis / SQLite integration checks passed (${httpOnly ? 'Node HTTP client; no browser' : 'browser'}). No external recipient contacted.\n`);
 } finally {
   for (const child of [...children].reverse()) if (child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');
   await new Promise(resolveDelay => setTimeout(resolveDelay, 500));

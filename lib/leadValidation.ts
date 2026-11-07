@@ -1,17 +1,17 @@
 export const EXPERIENCE_OPTIONS = ['Oui', 'Non'] as const;
-export const TIMELINE_OPTIONS = ['0-3 mois', '3-6 mois', '6-12 mois', 'plus de 12 mois'] as const;
+export const TIMELINE_OPTIONS = ['0-3 mois', '3-6 mois', '6-12 mois', 'plus de 12 mois', 'À définir'] as const;
 export const LOCAL_OPTIONS = ['Oui', 'Non', 'En recherche'] as const;
 export const OPERATOR_OPTIONS = ['Oui', 'Non', 'À préciser'] as const;
-export const FORMAT_OPTIONS = ['Livraison uniquement', 'Livraison + restaurant', 'Je ne sais pas encore'] as const;
+export const FORMAT_OPTIONS = ['À emporter', 'Avec restaurant', 'Je ne sais pas encore'] as const;
 
 export type ValidatedLead = {
   firstName: string; lastName: string; email: string; phone: string; city: string; department: string;
   personalContribution: number | null; estimatedBudget: number | null;
-  hasRestaurantExperience: (typeof EXPERIENCE_OPTIONS)[number];
-  hasEntrepreneurExperience: (typeof EXPERIENCE_OPTIONS)[number];
+  hasRestaurantExperience: (typeof EXPERIENCE_OPTIONS)[number] | null;
+  hasEntrepreneurExperience: (typeof EXPERIENCE_OPTIONS)[number] | null;
   openingTimeline: (typeof TIMELINE_OPTIONS)[number];
-  localStatus: (typeof LOCAL_OPTIONS)[number];
-  operatorModel: (typeof OPERATOR_OPTIONS)[number];
+  localStatus: (typeof LOCAL_OPTIONS)[number] | null;
+  operatorModel: (typeof OPERATOR_OPTIONS)[number] | null;
   format: (typeof FORMAT_OPTIONS)[number];
   motivation: string; message: string; rgpd: true; idempotencyKey: string;
 };
@@ -49,6 +49,10 @@ export function validateLead(input: unknown): ValidationResult {
     if (typeof source[key] !== 'string' || !options.includes(source[key] as string)) fieldErrors[key] = 'Sélectionnez une réponse dans la liste.';
     return source[key] as T[number];
   }
+  function optionalChoice<T extends readonly string[]>(key: string, options: T): T[number] | null {
+    if (source[key] === '' || source[key] === undefined) return null;
+    return option(key, options);
+  }
   const firstName = text('firstName', 1, 80);
   const lastName = text('lastName', 1, 80);
   const email = text('email', 3, 254).toLowerCase();
@@ -62,12 +66,12 @@ export function validateLead(input: unknown): ValidationResult {
   const estimatedBudget = parseEuroAmount(source.estimatedBudget ?? '');
   if (personalContribution === undefined) fieldErrors.personalContribution = 'Indiquez un montant en euros (ex. 30 000,00), sans « k », ou laissez vide.';
   if (estimatedBudget === undefined) fieldErrors.estimatedBudget = 'Indiquez un montant en euros (ex. 100 000), sans « k », ou laissez vide.';
-  const hasRestaurantExperience = option('hasRestaurantExperience', EXPERIENCE_OPTIONS);
-  const hasEntrepreneurExperience = option('hasEntrepreneurExperience', EXPERIENCE_OPTIONS);
+  const hasRestaurantExperience = optionalChoice('hasRestaurantExperience', EXPERIENCE_OPTIONS);
+  const hasEntrepreneurExperience = optionalChoice('hasEntrepreneurExperience', EXPERIENCE_OPTIONS);
   const openingTimeline = option('openingTimeline', TIMELINE_OPTIONS);
-  const localStatus = option('localStatus', LOCAL_OPTIONS);
-  const operatorModel = option('operatorModel', OPERATOR_OPTIONS);
-  const format = option('format', FORMAT_OPTIONS);
+  const localStatus = optionalChoice('localStatus', LOCAL_OPTIONS);
+  const operatorModel = optionalChoice('operatorModel', OPERATOR_OPTIONS);
+  const format = optionalChoice('format', FORMAT_OPTIONS) ?? 'Je ne sais pas encore';
   const motivation = text('motivation', 10, 2000, true);
   const message = text('message', 0, 2000, true);
   const idempotencyKey = text('idempotencyKey', 36, 36).toLowerCase();

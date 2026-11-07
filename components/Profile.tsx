@@ -1,16 +1,79 @@
 import EditorialPhoto from './EditorialPhoto';
 
 export default function Profile() {
-  const qualities = [
-    ['L’envie d’entreprendre', 'En activité, en reconversion ou déjà indépendant : racontez ce qui vous donne envie de construire votre projet.'],
-    ['Le goût du terrain', 'Service, gestion, management : votre expérience compte, y compris lorsqu’elle vient d’un autre secteur.'],
-    ['Un projet à préparer', 'Une ville, un calendrier, un financement à étudier. Vous n’avez pas besoin d’avoir toutes les réponses pour commencer à réfléchir.'],
-  ];
-  return <section id="profil" className="profile-section" aria-labelledby="profile-title">
-    <div className="section"><div className="section-index"><span>02</span><p>Votre place à table</p><span aria-hidden="true">↘</span></div>
-      <div className="profile-grid"><div className="profile-heading" data-reveal><p className="eyebrow">Le prochain chapitre</p><h2 id="profile-title">Votre parcours.<br /><em>Votre signature.</em></h2><p>Un métier actuel ne résume pas une envie d’entreprendre. Ce qui nous intéresse ici, c’est le projet que vous souhaitez préparer.</p><a className="text-link" href="#projet">Faire le point sur mon projet <span aria-hidden="true">↗</span></a>
-        <figure className="service-figure"><EditorialPhoto name="service" alt="Des mains se passent une pile de boîtes à pizza portant le nom Pizza Zio." /><figcaption>Le service, un travail collectif.</figcaption></figure>
-      </div><ol className="profile-list">{qualities.map(([title, copy], index) => <li key={title} data-reveal><span className="list-index" aria-hidden="true">0{index + 1}</span><h3>{title}</h3><p>{copy}</p></li>)}<li className="profile-footnote"><p>Les critères définitifs d’entrée dans le réseau sont à confirmer par l’équipe Pizza Zio. Chaque candidature fera l’objet d’une étude humaine.</p></li></ol></div>
-    </div>
-  </section>;
+  return (
+    <section
+      id="profil"
+      className="profile-section"
+      aria-labelledby="profile-title"
+    >
+      <div className="section profile-grid">
+        <figure className="profile-media" data-reveal="true">
+          <EditorialPhoto
+            name="service"
+            alt="Un échange de boîtes à pizza Pizza Zio entre deux personnes."
+          />
+          <figcaption>
+            Une envie d’entreprendre, un projet à construire.
+          </figcaption>
+        </figure>
+        <div className="profile-content">
+          <div className="profile-heading" data-reveal="true">
+            <p className="eyebrow">Votre place dans l’histoire</p>
+            <h2 id="profile-title">
+              Et si la suite,
+              <br />
+              c’était vous ?
+            </h2>
+            <p>
+              Votre métier actuel ne résume pas votre potentiel. Parlons de ce
+              que vous souhaitez construire.
+            </p>
+          </div>
+          <ol className="profile-list">
+            <li data-reveal="true">
+              <span className="list-index" aria-hidden="true">
+                01
+              </span>
+              <div>
+                <h3>Votre expérience</h3>
+                <p>
+                  Restauration, management, commerce ou reconversion : chaque
+                  parcours apporte une histoire.
+                </p>
+              </div>
+            </li>
+            <li data-reveal="true">
+              <span className="list-index" aria-hidden="true">
+                02
+              </span>
+              <div>
+                <h3>Votre envie</h3>
+                <p>
+                  Ce qui vous donne envie d’entreprendre et de vous impliquer
+                  dans un établissement.
+                </p>
+              </div>
+            </li>
+            <li data-reveal="true">
+              <span className="list-index" aria-hidden="true">
+                03
+              </span>
+              <div>
+                <h3>Votre projet</h3>
+                <p>
+                  Une ville, un calendrier, un financement à étudier. La
+                  réflexion peut commencer maintenant.
+                </p>
+              </div>
+            </li>
+          </ol>
+          <p className="profile-footnote">
+            Les critères d’entrée dans le réseau sont à confirmer par l’équipe
+            Pizza Zio. Chaque candidature fera l’objet d’une étude humaine.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
 }

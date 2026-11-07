@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import { launchConfig, launchReadiness, PRIVACY_NOTICE_VERSION } from '@/data/launchConfig';
 
@@ -13,7 +12,9 @@ export default function PrivacyPage() {
 
   return (
     <main className="section max-w-4xl">
-      <Link href="/" className="font-semibold underline underline-offset-4">← Retour à Pizza Zio</Link>
+      {/* A full document navigation renews the CSP nonce between the notice and the application. */}
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+      <a href="/" className="font-semibold underline underline-offset-4">← Retour à Pizza Zio</a>
       <h1 className="mt-8 text-4xl font-bold">Données personnelles</h1>
       {!noticeReady ? (
         <section className="card mt-8" aria-labelledby="privacy-pending-title">
@@ -55,7 +56,7 @@ export default function PrivacyPage() {
           <p className="text-sm">Version de la notice : {PRIVACY_NOTICE_VERSION}.</p>
         </div>
       )}
-      <p className="mt-8"><Link href="/mentions-legales" className="underline underline-offset-4">Consulter les mentions légales</Link></p>
+      <p className="mt-8"><a href="/mentions-legales" className="underline underline-offset-4">Consulter les mentions légales</a></p>
     </main>
   );
 }

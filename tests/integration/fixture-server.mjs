@@ -94,7 +94,7 @@ const server = createServer(async (request, response) => {
       if (request.headers.authorization !== `Bearer ${settings.controlToken}`) return reply(response, 401, { ok: false });
       const control = await body(request);
       if (control.reset === true) { await redis(['FLUSHDB']); database.exec('DELETE FROM leads'); deliveries = 0; mode = 'normal'; }
-      if (control.mode && ['normal', 'drop-ack-once', 'webhook-error', 'redis-error'].includes(control.mode)) mode = control.mode;
+      if (control.mode && ['normal', 'drop-ack-once', 'bad-ack-once', 'webhook-error', 'redis-error'].includes(control.mode)) mode = control.mode;
       return reply(response, 200, { ok: true, mode, deliveries });
     }
     if (request.url === '/redis' && request.method === 'POST') {
@@ -124,6 +124,11 @@ const server = createServer(async (request, response) => {
         // The durable commit is complete. Only the response is lost.
         request.socket.destroy();
         return;
+      }
+      if (mode === 'bad-ack-once') {
+        mode = 'normal';
+        // A successful HTTP status alone must never count as confirmed persistence.
+        return reply(response, 201, { ok: true, persisted: false, submissionId: payload.submissionId });
       }
       return reply(response, 201, { ok: true, persisted: true, submissionId: payload.submissionId });
     }

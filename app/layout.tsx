@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Devenir franchisé Pizza Zio — Présentez votre projet',
-  description: 'Découvrez Pizza Zio, enseigne née à Roubaix en 1983, et présentez votre projet de pizzeria : parcours, implantation et préparation de votre financement.',
+  description: 'Présentez votre projet de franchise Pizza Zio dans le Nord (59). Découvrez les formats à emporter ou avec restaurant, l’enseigne et les étapes de candidature.',
   applicationName: 'Pizza Zio Franchise',
   robots: { index: false, follow: false },
   openGraph: {

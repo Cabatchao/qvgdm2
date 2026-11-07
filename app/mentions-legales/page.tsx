@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import { launchConfig, launchReadiness } from '@/data/launchConfig';
 
@@ -24,7 +23,9 @@ export default function LegalNoticePage() {
 
   return (
     <main className="section max-w-4xl">
-      <Link href="/" className="font-semibold underline underline-offset-4">← Retour à Pizza Zio</Link>
+      {/* A full document navigation renews the CSP nonce between the notice and the application. */}
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+      <a href="/" className="font-semibold underline underline-offset-4">← Retour à Pizza Zio</a>
       <h1 className="mt-8 text-4xl font-bold">Mentions légales</h1>
       {!launchReadiness.legalReady || !launchConfig.approved ? (
         <section className="card mt-8" aria-labelledby="legal-pending-title">
@@ -44,7 +45,7 @@ export default function LegalNoticePage() {
           </dl>
         </section>
       )}
-      <p className="mt-8"><Link href="/confidentialite" className="underline underline-offset-4">Consulter les informations sur les données personnelles</Link></p>
+      <p className="mt-8"><a href="/confidentialite" className="underline underline-offset-4">Consulter les informations sur les données personnelles</a></p>
     </main>
   );
 }
