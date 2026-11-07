@@ -1,6 +1,16 @@
 # Pizza Zio — réception, recette et préparation de publication
 
-État du 7 novembre 2026. Le design principal et l’aperçu privé version 9 sont conservés. Les variantes visuelles ne sont pas réintroduites.
+État du 7 novembre 2026. Le design principal est conservé et l’aperçu privé est publié en version 10. Les variantes visuelles ne sont pas réintroduites. Le serveur de candidatures reste à déployer et à raccorder ; la publication statique ne valide pas la réception réelle des dossiers ni des emails.
+
+## Dernière boucle avant publication
+
+Deux écarts ont été corrigés : le texte mentionnait encore le directeur alors que Maxence est le seul responsable initial ; le serveur acceptait deux anciens formats de livraison absents de l'offre actuelle. Les deux refus ont été testés en échec avant correction puis en réussite, avec HTTP 422 et aucun appel sortant. Les formats « À emporter », « Avec restaurant » et le choix indécis restent acceptés dans la recette isolée.
+
+La passe intégrée après ces corrections compte **67 tests serveur/sécurité/réception/notification/export et 13 tests de composants réussis, zéro échec**. La compilation de production avec les médias conservés et l'export statique réussissent. Les essais Google et email restent simulés ; les résultats HTTP locaux des passes antérieures ci-dessous ne sont pas de nouveaux essais distants.
+
+Les quatre scénarios HTTP de sécurité ont aussi été rejoués avec succès sur ce nouveau build local `3cTP6Q6rv4ATkHCwxeDPJ` : en-têtes et nonces serveur, refus de collecte/CORS, fichiers sensibles et scripts navigateur. Le serveur a été arrêté après les tests. Cette passe sur localhost est distincte des contrôles HTTPS du Site statique.
+
+La version privée 10 a ensuite passé **33 contrôles HTTPS réels** : trois pages, sept chemins sensibles refusés, POST de collecte refusé, seize ressources identiques, film identique et cinq accès anonymes refusés en 401. Une première passe avait échoué sur l'absence d'en-tête de taille du film ; le vérificateur a été adapté pour comparer le fichier avec une lecture bornée, puis la même recette complète a réussi. Détails dans `docs/recette-deploiement-2026-11-07.md`.
 
 ## Objectif et résultat attendu
 

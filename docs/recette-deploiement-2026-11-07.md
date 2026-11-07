@@ -2,6 +2,33 @@
 
 Vérification du 7 novembre 2026. Cette note distingue la configuration préparée des opérations réellement exécutées.
 
+## Dernier état — version privée 10 publiée
+
+La consultation statique existante est désormais déployée en version **10**, à l'adresse https://pizza-zio-apercu-prive-octobre.maxatemax.chatgpt.site. Le déploiement `appgdep_6aef3419862c8191a037916505bd963b` a terminé avec le statut `succeeded`, depuis le commit source Sites `32c1a3cb2c07838df68761a774c88d1418af441e`. La relecture confirme un seul utilisateur autorisé, le propriétaire, sans groupe ni visiteur externe.
+
+Le design, les six images du pack v2 et le film sont conservés. Le texte décrit désormais un seul responsable des candidatures, conformément à la consigne de Maxence. La compilation Next avec le pack privé et l'export des trois pages ont réussi. Les médias privés restent exclus du dépôt GitHub public.
+
+Cette publication ne contient pas le serveur Next de candidatures. Elle ne collecte rien et ne prouve ni une écriture Google Sheets ni une notification réelle. L'ouverture dans le navigateur non authentifié affiche bien l'écran de connexion. Le navigateur de prévisualisation local était occupé par une autre application : il n'a pas été interrompu, et aucune nouvelle validation visuelle mobile ou Safari n'est annoncée.
+
+La création Vercel demeure bloquée par le refus API 403 décrit plus bas. La tentative de connexion CLI a ensuite été arrêtée par une restriction réseau vers l'API Vercel ; elle n'a pas établi de session authentifiée. La reprise n'a pas tenté de contourner ce refus. Les sections suivantes conservent la chronologie de cette tentative serveur, distincte de la publication statique réussie.
+
+## Boucle HTTPS réellement exécutée sur la version 10
+
+La première passe de `scripts/check-private-preview.py` a réussi jusqu'au contrôle de la vidéo puis s'est arrêtée : le HEAD attendu devait préciser la taille, mais le serveur répondait 200, `video/mp4`, transfert chunked et sans Content-Length. La source et l'archive contenaient bien le même film de 2 211 390 octets. Le vérificateur a été corrigé pour accepter une preuve alternative bornée, sans ignorer une taille fausse : Range d'un octet, puis comparaison de la taille et du SHA-256 intégral si le serveur ignore Range et si le fichier ne dépasse pas 4 Mio.
+
+La même recette complète a ensuite terminé avec le code 0 : **33 contrôles HTTPS réussis**. Le certificat a été vérifié, sans modification de la politique d'accès. Le jeton existant est resté en mémoire et n'a été envoyé qu'à l'origine du Site.
+
+| Action | Attendu | Observé |
+| --- | --- | --- |
+| Lire les trois pages avec un accès autorisé | Pages actuelles, CSP statique stricte, noindex, aucun champ de collecte | 3 réponses 200, H1 attendus et script de présentation conforme au hash CSP |
+| Demander sept chemins de sources ou secrets | Aucune source exposée | 7 réponses 404 |
+| Envoyer un POST vide à `/api/lead` | Pas de collecte ni faux succès sur cet export | 404 |
+| Lire les images référencées et les quatre polices | Octets identiques aux sources préparées | 16 comparaisons SHA-256 conformes |
+| Vérifier le film après correction du test | Taille exacte et preuve bornée | Range ignoré avec 200 ; téléchargement limité, taille et SHA-256 intégral conformes |
+| Lire les trois pages, l'image hero et le film sans authentification | Aucun contenu privé fourni | 5 réponses 401, sans suivre de redirection |
+
+Ces contrôles concernent la consultation statique privée. Ils ne démontrent ni une réception Google Sheets, ni un email envoyé, ni le fonctionnement ou la sécurité du futur serveur distant de candidatures.
+
 ## Objectif vérifiable
 
 Maxence doit pouvoir tester la réception des candidatures sur un serveur HTTPS, sans rendre la collecte accessible au public. Il reste le seul responsable humain ayant accès aux candidatures pour cette première phase. Un visiteur anonyme doit rencontrer la protection d'accès ; un testeur autorisé doit pouvoir ouvrir la recette. La première version couvre le site existant et son circuit de réception, sans nouveau design, domaine public ni service payant provisionné.
@@ -15,7 +42,7 @@ Avant toute ouverture, le test convenu est : une candidature fictive génère un
 - Projet prévu : `pizza-zio-franchise-recette`, distinct de Homa Location.
 - Dépôt reconnu par l'intégration Vercel : `Cabatchao/qvgdm2`, identifiant `1156433434`.
 - Branche de travail : `codex/pizza-zio-recette-lancement` ; le commit final doit être arrêté après les tests, puis utilisé explicitement pour le déploiement.
-- Le Site privé existant `appgprj_6ae22bbef2208191bac38f7094c67504` et sa version 9 n'ont pas été modifiés dans cette étape.
+- Lors de la première tentative Vercel, le Site privé existant `appgprj_6ae22bbef2208191bac38f7094c67504` était en version 9. Sa mise à jour ultérieure en version 10 est documentée ci-dessus.
 
 ## Configuration préparée
 
@@ -44,7 +71,7 @@ Aucun secret Google, Redis, email ou autre ne figure dans cette note. Ils doiven
 
 Le refus ne prouve ni que le compte entier est inutilisable, ni qu'une reconnexion le résoudrait. Il concerne la création de ce projet via l'accès actuel. Le connecteur propose un fallback CLI pour la même opération et la même équipe, avec les propres identifiants du CLI ; ceux-ci ne sont pas disponibles. Aucune seconde tentative identique, aucun changement d'équipe et aucun abaissement de protection n'ont été effectués.
 
-**État : aucun projet créé et aucun déploiement lancé.** Il n'existe donc pas encore d'URL Vercel de recette à annoncer. Homa Location et le Site Pizza Zio conservé restent inchangés.
+**État de la tentative Vercel : aucun projet créé et aucun déploiement serveur lancé.** Il n'existe donc pas encore d'URL Vercel de recette à annoncer. Homa Location reste inchangé. La publication statique Pizza Zio ultérieure est décrite en tête de cette note.
 
 ## Reprise et boucle à exécuter
 

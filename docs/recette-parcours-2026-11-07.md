@@ -79,3 +79,18 @@ Les tests navigateur automatisés existants restent destinés à leur environnem
 ## Ce qui ne peut pas être déclaré validé
 
 La réception Google Sheets dans le futur environnement public, les permissions du directeur, une notification sur la boîte privée, Safari sur un iPhone physique, les performances du domaine final et la fermeture d’urgence sur cet hébergement restent à vérifier séparément. La recette HTTP réelle ci-dessus est locale : elle n’emprunte ni Internet ni une terminaison TLS et ne prouve pas les droits ou sauvegardes du futur hébergement. Les résultats locaux ne valent ni certification de sécurité ni validation de l’ouverture publique. Aucun mail réel n’a été envoyé par cette passe.
+
+## Boucle avant déploiement — formats et responsable initial
+
+La consigne d’accès a ensuite été précisée : Maxence est le seul responsable humain qui consulte les candidatures dans la première phase. Aucun accès au directeur n’est à créer ni à tester pour cette phase. Le texte de l’étape « Le premier échange » mentionne désormais une étude confidentielle par le responsable du recrutement, sans modifier le dessin, les conditions ni les indicateurs d’ouverture.
+
+Deux anciens formats restaient acceptés par la validation serveur, alors qu’ils ne figurent plus dans les deux formats confirmés ni dans le formulaire. La boucle de régression a été exécutée avant puis après correction :
+
+| Action | Attendu | Avant correction | Après correction |
+| --- | --- | --- | --- |
+| Envoyer le format « Livraison uniquement » au gestionnaire de candidature | HTTP 422, erreur sur le format et aucun appel externe | HTTP 201, test en échec | HTTP 422, aucun reçu, zéro appel externe simulé |
+| Envoyer « Livraison + restaurant » | Même refus avant le limiteur et le récepteur | HTTP 201, test en échec | HTTP 422, aucun reçu, zéro appel externe simulé |
+| Envoyer « À emporter », « Avec restaurant » ou « Je ne sais pas encore » | Choix conservé jusqu’au récepteur | Conforme | Conforme |
+| Ne pas préciser le format | Projet accepté avec « Je ne sais pas encore » | Conforme | Conforme |
+
+Les 30 tests ciblés de `tests/lead.test.ts` réussissent après correction, ainsi que TypeScript et la vérification du diff. Les transports sont simulés dans cette passe : aucun dossier Google ni email réel créé. La recette du déploiement HTTPS reste distincte.

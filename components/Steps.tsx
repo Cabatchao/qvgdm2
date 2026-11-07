@@ -28,7 +28,7 @@ export default function Steps({ available = false }: { available?: boolean }) {
             </span>
             <div>
               <h3>Le premier échange</h3>
-              <p>Votre candidature est étudiée par notre équipe avec le directeur de Pizza Zio. Le premier échange est prévu par email.</p>
+              <p>Votre candidature est étudiée confidentiellement par le responsable du recrutement. Le premier échange est prévu par email.</p>
             </div>
           </li>
           <li data-reveal="true">
