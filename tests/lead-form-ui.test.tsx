@@ -4,6 +4,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { JSDOM } from 'jsdom';
 import LeadForm from '../components/LeadForm';
+import { validateLead } from '../lib/leadValidation';
 
 let dom: JSDOM;
 let testing: typeof import('@testing-library/react');
@@ -64,7 +65,27 @@ test('le formulaire fermé ne saisit ni ne transmet de données', () => {
   assert.equal(rendered.container.querySelector('form'), null);
   assert.equal(rendered.container.querySelector('input'), null);
   assert.match(rendered.container.textContent ?? '', /formulaire de cette page est en préparation/);
+  assert.match(rendered.container.textContent ?? '', /Les candidatures ne peuvent pas encore être envoyées depuis ce site/);
   assert.equal(fetchMock.mock.callCount(), 0);
+});
+
+test('un candidat peut choisir À définir et transmettre un calendrier valide sans inventer une date', async () => {
+  let submitted: Record<string, unknown> | undefined;
+  const fetchMock = mock.method(globalThis, 'fetch', async (_url: Parameters<typeof fetch>[0], init?: RequestInit) => {
+    submitted = submittedBody(init);
+    const validated = validateLead(submitted);
+    assert.equal(validated.ok, true);
+    if (validated.ok) assert.equal(validated.data.openingTimeline, 'À définir');
+    return jsonResponse({ ok: true, submissionId: submitted.idempotencyKey }, 201);
+  });
+  const rendered = openForm();
+  const calendar = rendered.getByLabelText(/Quel est votre horizon de projet/) as HTMLSelectElement;
+  assert.ok([...calendar.options].some(option => option.value === 'À définir'));
+  testing.fireEvent.change(calendar, { target: { value: 'À définir' } });
+  testing.fireEvent.submit(rendered.form);
+  await testing.waitFor(() => assert.ok(rendered.queryByRole('status')));
+  assert.equal(fetchMock.mock.callCount(), 1);
+  assert.equal(submitted?.openingTimeline, 'À définir');
 });
 
 test('sans hydratation, les champs restent désactivés et le formulaire ne peut pas fuir par URL', () => {

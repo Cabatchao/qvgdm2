@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import Immersion from '@/components/Immersion';
 import Network from '@/components/Network';
 import FranchiseTerms from '@/components/FranchiseTerms';
+import ArrowIcon from '@/components/ArrowIcon';
 import Script from 'next/script';
 import { cinemaEnabled } from '@/lib/visualPack';
 import { headers } from 'next/headers';
@@ -40,13 +41,14 @@ export default function Page() {
               <span aria-hidden="true">.</span>
             </a>
             <nav aria-label="Navigation principale">
-              <a href="#concept">La maison</a>
-              <a href="#restaurants">Nos restaurants</a>
-              <a href="#franchise">La franchise</a>
-              <a href="#questions">Vos questions</a>
+              <a className="nav-secondary" href="#concept">La maison</a>
+              <a className="nav-secondary" href="#restaurants">Nos restaurants</a>
+              <a href="#formats">Formats</a>
+              <a href="#franchise">Conditions</a>
+              <a href="#questions">Questions</a>
             </nav>
             <a href="#projet" className="header-cta">
-              Votre projet <span aria-hidden="true">↗</span>
+              Votre projet <ArrowIcon />
             </a>
           </div>
         </header>

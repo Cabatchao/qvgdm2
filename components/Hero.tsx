@@ -1,4 +1,5 @@
 import EditorialPhoto from './EditorialPhoto';
+import ArrowIcon from './ArrowIcon';
 import { franchiseData } from '@/data/franchiseData';
 
 export default function Hero({
@@ -48,10 +49,10 @@ export default function Hero({
           <div className="hero-actions">
             <a className="cta hero-cta" href="#projet">
               {available ? 'Présenter mon projet' : 'Préparer mon projet'}
-              <span aria-hidden="true">↗</span>
+              <ArrowIcon />
             </a>
             <a className="hero-discover" href="#formats">
-              Comparer les deux formats <span aria-hidden="true">↓</span>
+              Découvrir les deux formats <ArrowIcon direction="down" />
             </a>
           </div>
         </div>

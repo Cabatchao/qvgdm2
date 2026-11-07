@@ -60,6 +60,28 @@ test('validation accepts unknown finances and optional phone', () => {
   assert.equal('score' in qualified, false);
 });
 
+test('a project with no known opening date preserves À définir through delivery and human qualification', async () => {
+  const network = upstream();
+  const result = await handleLeadRequest(request({ ...form, openingTimeline: 'À définir' }), config, network.fetcher);
+  assert.equal(result.status, 201);
+  assert.deepEqual(await result.json(), { ok: true, submissionId: id });
+  assert.equal(network.calls.length, 2);
+  const delivered = JSON.parse(String(network.calls[1].init.body));
+  assert.equal(delivered.application.openingTimeline, 'À définir');
+  assert.equal(delivered.qualification.openingTimeline, 'À définir');
+  assert.equal(delivered.qualification.requiresHumanReview, true);
+});
+
+test('an absent, malformed or unlisted timeline still fails before any external request', async () => {
+  for (const openingTimeline of ['', undefined, null, 12, [], 'À confirmer', 'immédiatement']) {
+    const network = upstream();
+    const result = await handleLeadRequest(request({ ...form, openingTimeline }), config, network.fetcher);
+    assert.equal(result.status, 422);
+    assert.ok((await result.json()).fieldErrors.openingTimeline);
+    assert.equal(network.calls.length, 0);
+  }
+});
+
 test('validation rejects malformed field types, unknown enum and unacknowledged notice', () => {
   const result = validateLead({ ...form, email: 'not-email', personalContribution: '30k', operatorModel: 'Investor', rgpd: 'true', firstName: [] });
   assert.equal(result.ok, false);

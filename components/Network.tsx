@@ -1,4 +1,5 @@
 import { franchiseData } from '@/data/franchiseData';
+import ArrowIcon from './ArrowIcon';
 
 export default function Network() {
   const { restaurants } = franchiseData;
@@ -56,7 +57,7 @@ export default function Network() {
                 {restaurant.opened ? <p className="restaurant-year">Depuis {restaurant.opened}</p> : null}
                 <p>{restaurant.address}<br />{restaurant.postcode} {restaurant.city}</p>
                 <a href={restaurant.url} target="_blank" rel="noopener noreferrer">
-                  Voir le restaurant <svg className="restaurant-arrow" aria-hidden="true" viewBox="0 0 16 16"><path d="M3 13 13 3M3 3h10v10" /></svg>
+                  Voir le restaurant <ArrowIcon />
                   <span className="sr-only"> {restaurant.city} (nouvel onglet)</span>
                 </a>
               </div>

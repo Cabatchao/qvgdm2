@@ -16,14 +16,14 @@ test('le parcours de lancement est lisible et ses destinations existent', async 
     .filter((href) => href.length > 1 && !document.getElementById(decodeURIComponent(href.slice(1)))));
   expect(invalidFragments).toEqual([]);
 
-  const compare = page.getByRole('link', { name: 'Comparer les deux formats' });
+  const compare = page.getByRole('link', { name: 'Découvrir les deux formats' });
   await expect(compare).toBeInViewport();
   await compare.click();
   await expect(page).toHaveURL(/#formats$/);
   await expect(page.locator('#formats-title')).toBeInViewport();
   await page.getByRole('link', { name: 'Préparer mon projet' }).click();
   await expect(page).toHaveURL(/#projet$/);
-  await expect(page.getByText('Ouverture prochaine des candidatures', { exact: true })).toBeInViewport();
+  await expect(page.getByText('Candidatures en préparation', { exact: true })).toBeInViewport();
   expect(errors).toEqual([]);
 });
 
@@ -235,7 +235,7 @@ test('la zone, les deux formats et la fermeture du formulaire sont explicites', 
   await expect(page.locator('.hero-description')).toContainText('Nord (59)');
   await expect(page.locator('#formats h3').first()).toHaveText('À emporter');
   await expect(page.locator('#formats h3').nth(1)).toHaveText('Avec restaurant');
-  await expect(page.locator('#projet')).toContainText('Ouverture prochaine des candidatures');
+  await expect(page.locator('#projet')).toContainText('Candidatures en préparation');
   await expect(page.locator('#projet a[href^="http"]')).toHaveCount(0);
   await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
 });

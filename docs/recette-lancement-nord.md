@@ -1,11 +1,11 @@
 # Pizza Zio · Recette du recrutement dans le Nord
-3 novembre 2026
+Recette initiale : 3 novembre 2026. Mise à jour de présentation : 7 novembre 2026.
 
 ## État de la version
 
 L’accueil reprend la présentation du 30 octobre, avec le film et son affiche, les deux formats confirmés et la zone Nord (59). Le dossier sera traité par Maxence avec le directeur de Pizza Zio. L’ouverture technique et l’indexation sont indépendantes et fermées par défaut. L’adresse personnelle de suivi n’est ni un champ public de configuration, ni un contact à publier. Un contact officiel de l’enseigne reste à valider pour les mentions publiques.
 
-Les chiffres financiers et le nombre actuel de franchisés restent à valider auprès de l’enseigne. Les anciennes valeurs ne figurent plus dans les données publiques du site. Pour le candidat, les informations les plus utiles à obtenir sont les villes réellement ouvertes, l’apport indicatif et l’investissement total pour chaque format.
+Les conditions confirmées sont un droit d’entrée de 30 000 € TTC, une redevance de 5 % du chiffre d’affaires mensuel HT et un contrat de dix ans. Le droit d’entrée ne représente pas l’investissement total du projet. L’apport personnel, l’investissement total pour chaque format et le nombre actuel de franchisés restent à confirmer par l’équipe Pizza Zio. Les huit restaurants présentés ne constituent pas un décompte de franchisés. Les villes réellement disponibles sont à étudier avec la direction.
 
 ## Parcours et règle de vérification
 
@@ -24,6 +24,8 @@ Un candidat souhaite exploiter une pizzeria dans le Nord. Il découvre les forma
 
 ## Résultats de la recette technique
 
+Les résultats de cette section et de la contre-vérification suivante sont ceux du 3 novembre. Ils ne constituent pas une nouvelle mesure de performance ou une nouvelle recette du circuit réel après les modifications de présentation du 7 novembre.
+
 La compilation de production a passé 53 tests serveur, 10 tests du formulaire, 24 tests navigateur sur mobile et ordinateur et 9 scénarios d’intégration. Les 22 contrôles HTTPS supplémentaires ont été exécutés sur le serveur local de recette. Sur les pages légales, le navigateur interrompait une requête de préchargement. Après correction des liens, la navigation a réussi au même contrôle.
 
 Sur trois chargements mobiles simulés à froid, le contenu principal s’est affiché en 1,55 à 1,70 seconde, avec un décalage visuel cumulé inférieur à 0,006 et sans téléchargement automatique de la vidéo. Ces mesures portent sur la compilation avec les médias privés. Le premier audit des dépendances de production n’a signalé aucune vulnérabilité connue. L’audit complet initial avait relevé onze entrées modérées dans les outils de développement.
@@ -40,6 +42,23 @@ Sur trois chargements mobiles simulés à froid, le contenu principal s’est af
 | Exporter dans une destination contenant un fichier témoin ou interrompre l’export | Un ancien fichier pouvait être republié. | Une destination non vide est refusée. Une interruption laisse la destination finale vide. Le déploiement reprend uniquement les fichiers du nouvel export. |
 
 Le nouvel audit npm a signalé zéro vulnérabilité connue après correction de `minimatch` pour les outils de développement. Le contournement par rotation IPv6 a été testé avec Redis local. Les pertes de confirmation et les doubles requêtes ont été testées avec un récepteur local persistant. Le scénario d’ajout dans Google Sheets a été vérifié séparément. Les essais navigateur automatisés utilisent Chromium. La conversion commerciale, Safari sur iPhone physique et les notifications de la future production restent à mesurer.
+
+## Corrections issues de l’audit du 7 novembre
+
+Trois spécialistes ont appliqué les corrections de rédaction, de présentation et de formulaire ; deux autres ont relu le diff métier et les garde-fous. Le H1, la palette et l’ordre des sections sont conservés. Le menu donne accès aux formats, aux conditions et aux questions sur petit écran. Les flèches sont des SVG décoratifs ; les adresses et liens passent à 15 px et les années à 14 px. La carte prend toute la largeur jusqu’à 1 100 px, et ses petites étiquettes sont remplacées par les repères numérotés sous 520 px, avec la liste complète toujours disponible.
+
+Le droit d’entrée est explicitement distingué de l’investissement total près du montant. « Découvrir les deux formats » annonce des descriptions factuelles, sans comparaison économique inventée. Les bénéfices confirmés ne sont plus répétés en titres et descriptions. L’état « Candidatures en préparation » précise qu’aucun envoi n’est possible dans cet aperçu. Le futur formulaire et sa validation acceptent « À définir » comme calendrier explicite.
+
+| Action rejouée | Résultat attendu | Résultat observé le 7 novembre |
+| --- | --- | --- |
+| Choisir « À définir » dans le formulaire de test | Valeur conservée du formulaire à la qualification et au récepteur | 30 tests serveur/récepteur simulé et 13 tests UI réussis. Valeur stockée comme texte dans la requête Sheets ; les valeurs absentes, malformées ou inconnues sont refusées avant tout appel externe. Aucun service réel contacté. |
+| Rejouer les contrôles sécurité et export | Protections et export fermé conservés | 17 tests supplémentaires réussis, dont requêtes invalides, origines refusées, limites de corps, absence de faux succès et export atomique. Pas de nouveau test contre la production ni de certification de sécurité exhaustive. |
+| Compiler et contrôler l’export | Aucun échec TypeScript, huit adresses et liens valides | Compilation de production réussie ; huit repères/adresses, six années étayées, treize flèches SVG, aucune ancre manquante ; zéro champ/formulaire et CSP restrictive conservée. |
+| Utiliser le menu à 340 et 779 px CSS | Formats, Conditions et Questions visibles et activables | Navigation affichée, liens de 44 px de haut ; destinations et FAQ budget vérifiées au clavier. Aucun débordement à 340, 779, 909 et 1 363 px CSS. |
+| Consulter la carte à 779 px CSS | Noms plus lisibles et bonnes destinations | Carte large de 680 px, contre 368 px lors de l’audit ; noms visibles sans chevauchement sur la zone inspectée. À 340 px, repères conservés et liste lisible ; Saint-André rejoint son adresse avec « Depuis 2004 ». |
+| Lire les conditions puis préparer le projet | Distinction du budget, montants exacts, état honnête | 30 000 € TTC, 5 % du CA mensuel HT et dix ans présents ; note proche du droit d’entrée ; CTA aboutissant au panneau fermé, sans saisie ni transmission. |
+
+Les largeurs étroites ont été obtenues par zoom Chromium, pas sur téléphone physique. Les largeurs exactes 320, 801 et 820 px, Safari/iPhone et la préférence de réduction des animations en fonctionnement restent à vérifier ; la règle CSS de défilement immédiat est présente. Les sélecteurs des tests E2E ont été actualisés mais cette suite Playwright n’a pas été exécutée lors de cette passe. Aucun taux de conversion ou gain de performance n’est déduit de ces vérifications. Les protections de lancement et l’adresse personnelle restent inchangées.
 
 ## Préparer l’environnement destiné au public
 

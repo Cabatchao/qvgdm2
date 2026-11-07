@@ -1,6 +1,7 @@
 'use client';
 
 import { franchiseData } from '@/data/franchiseData';
+import { TIMELINE_OPTIONS } from '@/lib/leadValidation';
 import { FormEvent, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
 const initial = {
@@ -29,7 +30,7 @@ const projectFields: { name: TextField; label: string; required?: boolean; optio
   { name: 'hasRestaurantExperience', label: 'Avez-vous une expérience en restauration ?', options: [{ value: 'Oui', label: 'Oui' }, { value: 'Non', label: 'Non' }] },
   { name: 'hasEntrepreneurExperience', label: 'Avez-vous déjà dirigé une entreprise ?', options: [{ value: 'Oui', label: 'Oui' }, { value: 'Non', label: 'Non' }] },
   { name: 'operatorModel', label: 'Prévoyez-vous d’exploiter vous-même l’établissement ?', options: [{ value: 'Oui', label: 'Oui' }, { value: 'Non', label: 'Non' }, { value: 'À préciser', label: 'À préciser' }] },
-  { name: 'openingTimeline', required: true, label: 'Quel est votre horizon de projet ?', options: ['0-3 mois', '3-6 mois', '6-12 mois', 'plus de 12 mois'].map(value => ({ value, label: value })) },
+  { name: 'openingTimeline', required: true, label: 'Quel est votre horizon de projet ?', options: TIMELINE_OPTIONS.map(value => ({ value, label: value })) },
   { name: 'localStatus', label: 'Où en êtes-vous dans la recherche d’un local ?', options: [{ value: 'Oui', label: 'J’ai identifié un local' }, { value: 'En recherche', label: 'Je recherche un local' }, { value: 'Non', label: 'Je n’ai pas encore commencé' }] },
   { name: 'format', label: 'Quel format envisagez-vous ?', options: [...franchiseData.formats, 'Je ne sais pas encore'].map(value => ({ value, label: value })) },
 ];
@@ -162,22 +163,22 @@ export default function LeadForm({ available = false }: { available?: boolean })
 
   return <section id="projet" className="lead-section" aria-labelledby="lead-title"><div className="section">
     <div className="section-heading">
-      <p className="eyebrow">{available ? 'Votre projet Pizza Zio' : 'Ouverture prochaine des candidatures'}</p>
+      <p className="eyebrow">{available ? 'Votre projet Pizza Zio' : 'Candidatures en préparation'}</p>
       <h2 id="lead-title">{available ? 'Présentez' : 'Préparez'}<br /><em>votre projet.</em></h2>
       <p>{available
         ? 'Votre parcours, votre ville, votre envie d’entreprendre. Préparez les grandes lignes de votre projet.'
-        : 'Le formulaire de cette page est en préparation. En attendant son ouverture, préparez ces trois éléments pour votre premier échange avec Pizza Zio.'}</p>
+        : 'Le formulaire de cette page est en préparation. Les candidatures ne peuvent pas encore être envoyées depuis ce site. Vous pouvez déjà préparer votre premier échange avec Pizza Zio autour de ces trois sujets.'}</p>
     </div>
     {!available ? (
       <ol className="preparation-list" aria-label="Les repères pour préparer votre projet">
         <li><span aria-hidden="true">01</span><h3>Votre implantation</h3><p>La ville envisagée et vos premières idées pour le lieu.</p></li>
         <li><span aria-hidden="true">02</span><h3>Votre parcours</h3><p>Vos expériences, vos motivations et le rôle que vous souhaitez prendre.</p></li>
-        <li><span aria-hidden="true">03</span><h3>Votre calendrier</h3><p>Votre disponibilité et les prochaines étapes de votre réflexion.</p></li>
+        <li><span aria-hidden="true">03</span><h3>Votre calendrier</h3><p>Votre disponibilité et les prochaines étapes de votre réflexion, même si la date d’ouverture reste à définir.</p></li>
       </ol>
     ) : <>
       <noscript><div className="notice-panel">Activez JavaScript pour envoyer ce formulaire en toute sécurité. Aucune candidature n’a été envoyée.</div></noscript>
       {receipt ? <div ref={successRef} tabIndex={-1} role="status" className="success-panel"><span aria-hidden="true" className="success-mark">✓</span><h3>Votre projet a bien été transmis.</h3><p>Merci. Conservez cette référence : <strong>{receipt}</strong>.</p><p>Cette confirmation atteste de la réception de votre demande. Elle ne vaut pas acceptation de candidature. Le premier contact est prévu par email ; le délai de réponse reste à confirmer par l’équipe Pizza Zio.</p></div> : <form onSubmit={submit} method="post" action="/api/lead" className="lead-form" aria-busy={busy}>
-        <p className="form-legend">Les champs marqués d’un <span aria-hidden="true">*</span> sont obligatoires. Pour un premier échange, indiquez vos coordonnées, la ville, le calendrier et quelques mots sur votre projet. Les précisions peuvent attendre.</p>
+        <p className="form-legend">Les champs marqués d’un <span aria-hidden="true">*</span> sont obligatoires. Pour un premier échange, indiquez vos coordonnées, la ville et quelques mots sur votre projet. Si votre calendrier n’est pas encore fixé, choisissez « À définir ». Les autres précisions peuvent attendre.</p>
         {error && <div ref={errorRef} tabIndex={-1} role="alert" className="error-panel"><h3>Votre demande n’est pas encore confirmée.</h3><p>{error}</p>{Object.keys(fieldErrors).length > 0 && <ul>{Object.entries(fieldErrors).map(([name, message]) => <li key={name}><a href={`#${name}`}>{message}</a></li>)}</ul>}</div>}
         {awaitingReceipt && <div className="receipt-retry">
           <p>Gardez cet onglet ouvert sans le recharger pour conserver votre saisie. Nous reprendrons le même envoi pour retrouver son reçu ou terminer sa transmission.</p>

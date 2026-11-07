@@ -6,7 +6,7 @@ import { publicSearchOrigin } from '../lib/launchSeo';
 
 const normalized = validateLead({
   firstName: 'Camille', lastName: 'Recette', email: 'recette@example.test', city: 'Lille',
-  openingTimeline: '6-12 mois', motivation: '=1+1 exemple de saisie', rgpd: true,
+  openingTimeline: 'À définir', motivation: '=1+1 exemple de saisie', rgpd: true,
   idempotencyKey: '0b462409-7f89-443a-8a01-466cefab8d20',
 });
 if (!normalized.ok) throw new Error('Invalid fixture');
@@ -22,6 +22,9 @@ test('Sheets confirms one durable row after a lost ACK and stores user text lite
     assert.equal(operation, ':batchUpdate');
     const { requests } = body as { requests: [{addNamedRange:{namedRange:{namedRangeId:string}}},{appendCells:{ rows: {values: {userEnteredValue?:{stringValue?: string; formulaValue?: string}}[]}[]}}] };
     const cells = requests[1].appendCells.rows[0].values;
+    const calendar = cells[sheetHeaders.indexOf('Calendrier')].userEnteredValue;
+    assert.equal(calendar?.stringValue, 'À définir');
+    assert.equal(calendar?.formulaValue, undefined);
     assert.equal(cells[21].userEnteredValue?.stringValue, lead.motivation);
     assert.equal(cells[21].userEnteredValue?.formulaValue, undefined);
     assert.ok(requests[0].addNamedRange.namedRange.namedRangeId.endsWith(lead.idempotencyKey.replaceAll('-', '')));

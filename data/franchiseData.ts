@@ -21,7 +21,7 @@ export const franchiseData = {
   // Adresses officielles pizza-zio.fr, coordonnées BAN / IGN vérifiées le 7 novembre 2026.
   // Mérignies utilise le point du restaurant publié dans le lien Google Maps officiel.
   // Années vérifiées le 7 novembre 2026 : pizza-zio.fr/histoire/ (Marcq, Loos,
-  // Villeneuve et Mons), confirmation du responsable du projet (Capinghem).
+  // Villeneuve et Mons), confirmation du responsable du projet (Capinghem et Saint-André).
   // Voir docs/dates-ouverture-restaurants.md. Une année ambiguë reste null.
   restaurants: [
     {

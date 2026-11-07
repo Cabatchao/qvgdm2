@@ -1,4 +1,5 @@
 import EditorialPhoto from './EditorialPhoto';
+import ArrowIcon from './ArrowIcon';
 import { franchiseData } from '@/data/franchiseData';
 import { launchConfig } from '@/data/launchConfig';
 
@@ -23,8 +24,7 @@ export default function Formats({
           </h2>
         </div>
         <p>
-          Où vous voyez-vous au quotidien, au comptoir ou en salle ?
-          Vous pouvez encore hésiter entre les deux.
+          Au comptoir ou à table : découvrez les deux formats Pizza Zio.
         </p>
       </div>
       <div className="formats-grid">
@@ -39,8 +39,7 @@ export default function Formats({
             <span className="format-index">01</span>
             <h3>{franchiseData.formats[0]}</h3>
             <p>
-              Les clients retirent leur commande au comptoir. Comment
-              organiseriez-vous leur accueil à l’heure de pointe ?
+              Les clients retirent leur commande au comptoir.
             </p>
           </div>
         </article>
@@ -55,8 +54,7 @@ export default function Formats({
             <span className="format-index">02</span>
             <h3>{franchiseData.formats[1]}</h3>
             <p>
-              Les clients s’installent à table. Comment imaginez-vous la salle
-              et le service en lien avec la cuisine ?
+              Les clients s’installent à table.
             </p>
           </div>
         </article>
@@ -79,7 +77,7 @@ export default function Formats({
           résultat financier n’est garanti.
         </p>
         <a className="text-link" href="#franchise">
-          Les conditions de franchise <span aria-hidden="true">↗</span>
+          Les conditions de franchise <ArrowIcon direction="up-right" />
         </a>
       </aside>
     </section>

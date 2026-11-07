@@ -1,5 +1,5 @@
 export const EXPERIENCE_OPTIONS = ['Oui', 'Non'] as const;
-export const TIMELINE_OPTIONS = ['0-3 mois', '3-6 mois', '6-12 mois', 'plus de 12 mois'] as const;
+export const TIMELINE_OPTIONS = ['0-3 mois', '3-6 mois', '6-12 mois', 'plus de 12 mois', 'À définir'] as const;
 export const LOCAL_OPTIONS = ['Oui', 'Non', 'En recherche'] as const;
 export const OPERATOR_OPTIONS = ['Oui', 'Non', 'À préciser'] as const;
 export const FORMAT_OPTIONS = ['À emporter', 'Avec restaurant', 'Je ne sais pas encore', 'Livraison uniquement', 'Livraison + restaurant'] as const;
